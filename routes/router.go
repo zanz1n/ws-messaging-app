@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/websocket/v2"
 	"github.com/zanz1n/ws-messaging-app/services"
 )
 
@@ -27,15 +28,15 @@ func NewRouter(app *fiber.App) {
 	_ = conn
 	_ = dbctx
 
-	// app.Use("/api/gateway", func(c *fiber.Ctx) error {
-	// 	if websocket.IsWebSocketUpgrade(c) {
-	// 		c.Locals("allowed", true)
-	// 		return c.Next()
-	// 	}
-	// 	return c.Status(fiber.ErrUpgradeRequired.Code).JSON(fiber.Map{
-	// 		"error": "Websocket upgrade required",
-	// 	})
-	// })
+	app.Use("/api/gateway", func(c *fiber.Ctx) error {
+		if websocket.IsWebSocketUpgrade(c) {
+			c.Locals("allowed", true)
+			return c.Next()
+		}
+		return c.Status(fiber.ErrUpgradeRequired.Code).JSON(fiber.Map{
+			"error": "Websocket upgrade required",
+		})
+	})
 
 	// app.Get("/api", GetRoot())
 	// app.Get("/api/status", GetStatus(conn))
