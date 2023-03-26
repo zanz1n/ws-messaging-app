@@ -1,0 +1,22 @@
+{
+  "name": "ws-messaging-app",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "build:client": "pnpm --filter frontend build",
+    "dev:client": "pnpm --filter frontend dev"
+  },
+  "workspaces": [
+    "frontend/"
+  ],
+  "keywords": [],
+  "author": "Izan Rodrigues <izanrodrigues999@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/parser": "^5.56.0",
+    "eslint": "^8.36.0",
+    "typescript": "^5.0.2"
+  }
+}
