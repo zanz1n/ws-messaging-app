@@ -9,6 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/joho/godotenv"
+	"github.com/zanz1n/ws-messaging-app/routes"
 )
 
 var (
@@ -38,6 +39,8 @@ func main() {
 	}))
 
 	app.Use(recover.New())
+
+	routes.NewRouter(app)
 
 	if useTls {
 		app.ListenTLS(bindAddr, tlsCert, tlsKey)
