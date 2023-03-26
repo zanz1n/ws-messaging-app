@@ -23,7 +23,7 @@ func main() {
 	SetupEnv()
 
 	app := fiber.New(fiber.Config{
-		Prefork:       os.Getenv("APP_ENV") == "development",
+		Prefork:       os.Getenv("APP_FORK") == "true",
 		CaseSensitive: true,
 		StrictRouting: false,
 		JSONEncoder:   json.Marshal,
