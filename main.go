@@ -71,6 +71,10 @@ func SetupEnv() {
 		panic("DB_URI is not set")
 	}
 
+	if os.Getenv("RABBITMQ_URL") == "" {
+		panic("RABBITMQ_URL is not set")
+	}
+
 	if os.Getenv("TLS_CERT") != "" && os.Getenv("TLS_KEY") != "" {
 		useTls = true
 		tlsCert = os.Getenv("TLS_CERT")
