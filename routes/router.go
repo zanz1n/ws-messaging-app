@@ -23,10 +23,13 @@ func NewRouter(app *fiber.App) {
 
 	dbctx := context.Background()
 	db, conn := services.NewDbProvider()
+	mqconn, mqch := services.NewMqProvider()
 
-	_ = db
-	_ = conn
+	_ = mqconn
 	_ = dbctx
+	_ = conn
+
+	messagingService := services.NewMessagingService(mqch, db)
 
 	app.Use("/api/gateway", func(c *fiber.Ctx) error {
 		if websocket.IsWebSocketUpgrade(c) {
@@ -37,9 +40,6 @@ func NewRouter(app *fiber.App) {
 			"error": "Websocket upgrade required",
 		})
 	})
-
-	// app.Get("/api", GetRoot())
-	// app.Get("/api/status", GetStatus(conn))
-	// app.Get("/api/messages", GetMessages(db, dbctx))
-	// app.Get("/api/gateway", websocket.New(ChatGateway()))
+	
+	app.Get("/api/gateway", websocket.New(ChatGateway(messagingService)))
 }
