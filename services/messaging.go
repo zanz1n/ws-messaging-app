@@ -45,19 +45,27 @@ func NewMessagingService(ch *amqp.Channel, db *dba.Queries) *MessagingService {
 		queue:     &queue,
 	}
 
+	keepAlive := make(chan bool)
+
 	go func() {
 		msgs, _ := ms.ch.Consume(ms.queue.Name, "", true, false, false, false, nil)
 
+		var bodyParsed ChatMessage
+
 		go func() {
 			for m := range msgs {
+
+				json.Unmarshal(m.Body, &bodyParsed)
+
 				log.Printf("[%s]:%s  \x1b[35mWS\x1b[0m\t%s\x1b[0m\t%v",
 					"NONE",
 					"none",
 					"\x1b[31mMESSAGE",
-					m,
+					bodyParsed,
 				)
 			}
 		}()
+		<-keepAlive
 	}()
 
 	return &ms
