@@ -71,8 +71,9 @@ func (s *MessagingService) HanleIncomingMessage(rawPayload *[]byte) (*ChatMessag
 func (s *MessagingService) AddConn(conn *websocket.Conn) string {
 	addr := conn.RemoteAddr().String()
 
-	log.Printf("[%s]  \x1b[35mWS\x1b[0m\t  %s\t%s\x1b[0m",
+	log.Printf("[%s]:%s  \x1b[35mWS\x1b[0m\t%s\t%s\x1b[0m",
 		strings.Split(addr, ":")[0],
+		strings.Split(addr, ":")[1],
 		"/api/gateway",
 		"\x1b[32mOPENED",
 	)
@@ -87,8 +88,9 @@ func (s *MessagingService) AddConn(conn *websocket.Conn) string {
 }
 
 func (s *MessagingService) RemoveConn(addr string) {
-	log.Printf("[%s]  \x1b[35mWS\x1b[0m\t  %s\t%s\x1b[0m",
+	log.Printf("[%s]:%s  \x1b[35mWS\x1b[0m\t%s\t%s\x1b[0m",
 		strings.Split(addr, ":")[0],
+		strings.Split(addr, ":")[1],
 		"/api/gateway",
 		"\x1b[31mCLOSED",
 	)
