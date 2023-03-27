@@ -4,7 +4,6 @@ go 1.20
 
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
-	github.com/confluentinc/confluent-kafka-go/v2 v2.0.2 // indirect
 	github.com/fasthttp/websocket v1.5.1 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/gofiber/fiber/v2 v2.43.0 // indirect
@@ -17,6 +16,7 @@ require (
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
+	github.com/rabbitmq/amqp091-go v1.8.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/savsgio/dictpool v0.0.0-20221023140959-7bf2e61cea94 // indirect
 	github.com/savsgio/gotils v0.0.0-20230208104028-c358bd845dee // indirect
