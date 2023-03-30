@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/goccy/go-json"
@@ -32,8 +33,10 @@ func main() {
 		AppName:       "Ws Messaging App",
 	})
 
+	log.SetPrefix(fmt.Sprintf("%v - ", os.Getpid()))
+
 	app.Use(logger.New(logger.Config{
-		Format:     "${time} [${ip}]:${port} ${method} ${path} ${status} ${latency}\n",
+		Format:     "${pid} - ${time} [${ip}]:${port} ${method} ${path} ${status} ${latency}\n",
 		TimeFormat: "2006/01/02 15:04:05",
 		TimeZone:   "America/Sao_Paulo",
 	}))
