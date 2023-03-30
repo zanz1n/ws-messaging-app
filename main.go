@@ -71,8 +71,8 @@ func SetupEnv() {
 		panic("DB_URI is not set")
 	}
 
-	if os.Getenv("RABBITMQ_URL") == "" {
-		panic("RABBITMQ_URL is not set")
+	if os.Getenv("REDIS_URI") == "" {
+		panic("REDIS_URI is not set")
 	}
 
 	if os.Getenv("TLS_CERT") != "" && os.Getenv("TLS_KEY") != "" {
