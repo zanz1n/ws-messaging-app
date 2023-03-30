@@ -8,9 +8,10 @@ import (
 )
 
 func NewRedisProvider() *redis.Client {
+	config := ConfigProvider()
 	var err error
 	opts := redis.Options{
-		Addr:     os.Getenv("REDIS_URI"),
+		Addr: config.RedisUri,
 	}
 
 	opts.DB, err = strconv.Atoi(os.Getenv("REDIS_DB"))
@@ -19,8 +20,8 @@ func NewRedisProvider() *redis.Client {
 		opts.DB = 0
 	}
 
-	if (os.Getenv("REDIS_PASSWORD") != "") {
-		opts.Password = os.Getenv("REDIS_PASSWORD")
+	if config.RedisPassword != "" {
+		opts.Password = config.RedisPassword
 	}
 
 	client := redis.NewClient(&opts)

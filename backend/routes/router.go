@@ -1,8 +1,6 @@
 package routes
 
 import (
-	"context"
-	"os"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -12,7 +10,7 @@ import (
 )
 
 func NewRouter(app *fiber.App) {
-	if os.Getenv("APP_ENV") == "development" {
+	if services.ConfigProvider().AppEnv == "development" {
 		app.Static("/", "./frontend/dist", fiber.Static{
 			ByteRange:     true,
 			Index:         "index.html",
@@ -22,18 +20,16 @@ func NewRouter(app *fiber.App) {
 		})
 	}
 
-	dbctx := context.Background()
 	db, conn := services.NewDbProvider()
 
 	publisher := services.NewRedisProvider()
 	subscriber := services.NewRedisProvider()
 
-	_ = dbctx
 	_ = conn
 
 	messagingService := services.NewMessagingService(publisher, subscriber, db)
 
 	app.Use("/api/gateway", middlewares.NewWebsocketMiddleware())
-	
+
 	app.Get("/api/gateway", websocket.New(ChatGateway(messagingService)))
 }

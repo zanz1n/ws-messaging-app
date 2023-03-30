@@ -11,20 +11,16 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/joho/godotenv"
 	"github.com/zanz1n/ws-messaging-app/routes"
-)
-
-var (
-	useTls   bool
-	tlsCert  string
-	tlsKey   string
-	bindAddr string
+	"github.com/zanz1n/ws-messaging-app/services"
 )
 
 func main() {
 	SetupEnv()
 
+	config := services.ConfigProvider()
+
 	app := fiber.New(fiber.Config{
-		Prefork:       os.Getenv("APP_FORK") == "true",
+		Prefork:       config.AppFork,
 		CaseSensitive: true,
 		StrictRouting: false,
 		JSONEncoder:   json.Marshal,
@@ -45,10 +41,10 @@ func main() {
 
 	routes.NewRouter(app)
 
-	if useTls {
-		app.ListenTLS(bindAddr, tlsCert, tlsKey)
+	if config.UseTls {
+		app.ListenTLS(config.BindAddr, config.TlsCertPath, config.TlsKeyPath)
 	} else {
-		app.Listen(bindAddr)
+		app.Listen(config.BindAddr)
 	}
 }
 
@@ -60,27 +56,5 @@ func SetupEnv() {
 		}
 	}
 
-	if os.Getenv("APP_ENV") == "" {
-		os.Setenv("APP_ENV", "development")
-	}
-
-	if os.Getenv("BIND_ADDR") == "" {
-		bindAddr = ":3333"
-	} else {
-		bindAddr = os.Getenv("BIND_ADDR")
-	}
-
-	if os.Getenv("DATABASE_URI") == "" {
-		panic("DB_URI is not set")
-	}
-
-	if os.Getenv("REDIS_URI") == "" {
-		panic("REDIS_URI is not set")
-	}
-
-	if os.Getenv("TLS_CERT") != "" && os.Getenv("TLS_KEY") != "" {
-		useTls = true
-		tlsCert = os.Getenv("TLS_CERT")
-		tlsKey = os.Getenv("TLS_KEY")
-	}
+	services.GenerateConfigsFromEnv()
 }

@@ -2,14 +2,13 @@ package services
 
 import (
 	"database/sql"
-	"os"
 
 	_ "github.com/lib/pq"
 	"github.com/zanz1n/ws-messaging-app/internal/dba"
 )
 
 func NewDbProvider() (*dba.Queries, *sql.DB) {
-	uri := os.Getenv("DATABASE_URI")
+	uri := ConfigProvider().DatabaseUri
 
 	conn, err := sql.Open("postgres", uri)
 
