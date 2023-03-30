@@ -23,13 +23,14 @@ func NewRouter(app *fiber.App) {
 
 	dbctx := context.Background()
 	db, conn := services.NewDbProvider()
-	mqconn, mqch := services.NewMqProvider()
 
-	_ = mqconn
+	publisher := services.NewRedisProvider()
+	subscriber := services.NewRedisProvider()
+
 	_ = dbctx
 	_ = conn
 
-	messagingService := services.NewMessagingService(mqch, db)
+	messagingService := services.NewMessagingService(publisher, subscriber, db)
 
 	app.Use("/api/gateway", func(c *fiber.Ctx) error {
 		if websocket.IsWebSocketUpgrade(c) {
