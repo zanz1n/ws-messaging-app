@@ -3,6 +3,7 @@ package services
 import (
 	"log"
 	"os"
+	"strconv"
 )
 
 type Configs struct {
@@ -15,6 +16,7 @@ type Configs struct {
 	UseTls        bool
 	TlsCertPath   string
 	TlsKeyPath    string
+	RedisDb       int
 }
 
 var (
@@ -50,6 +52,16 @@ func GenerateConfigsFromEnv() {
 		instance.BindAddr = ":3333"
 	} else {
 		instance.BindAddr = os.Getenv("BIND_ADDR")
+	}
+
+	if os.Getenv("REDIS_DB") == "" {
+		instance.RedisDb = 0
+	} else {
+		v, err := strconv.Atoi(os.Getenv("REDIS_DB"))
+		if err != nil {
+			log.Panicf("environment: variable REDIS_DB must be an integer")
+		}
+		instance.RedisDb = v
 	}
 
 	if os.Getenv("USE_TLS") == "true" {

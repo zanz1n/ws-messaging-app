@@ -9,16 +9,11 @@ import (
 
 func NewRedisProvider() *redis.Client {
 	config := ConfigProvider()
-	var err error
 	opts := redis.Options{
 		Addr: config.RedisUri,
 	}
 
-	opts.DB, err = strconv.Atoi(os.Getenv("REDIS_DB"))
-
-	if err != nil {
-		opts.DB = 0
-	}
+	opts.DB = config.RedisDb
 
 	if config.RedisPassword != "" {
 		opts.Password = config.RedisPassword
