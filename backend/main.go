@@ -14,9 +14,18 @@ import (
 	"github.com/zanz1n/ws-messaging-app/services"
 )
 
-func main() {
-	SetupEnv()
+func init() {
+	if os.Getenv("APP_ENV") != "production" {
+		err := godotenv.Load()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
 
+	services.GenerateConfigsFromEnv()
+}
+
+func main() {
 	config := services.ConfigProvider()
 
 	app := fiber.New(fiber.Config{
@@ -46,15 +55,4 @@ func main() {
 	} else {
 		app.Listen(config.BindAddr)
 	}
-}
-
-func SetupEnv() {
-	if os.Getenv("APP_ENV") != "production" {
-		err := godotenv.Load()
-		if err != nil {
-			fmt.Println(err)
-		}
-	}
-
-	services.GenerateConfigsFromEnv()
 }
