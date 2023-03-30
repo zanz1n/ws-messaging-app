@@ -1,3 +1,6 @@
+-- name: GetUserByUsername :one
+SELECT * FROM "user" WHERE "username" = $1;
+
 -- name: GetAllMessages :many
 SELECT * FROM "message" LIMIT $1;
 

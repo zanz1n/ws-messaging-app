@@ -81,3 +81,21 @@ func (q *Queries) GetMessagesByUser(ctx context.Context, arg GetMessagesByUserPa
 	}
 	return items, nil
 }
+
+const getUserByUsername = `-- name: GetUserByUsername :one
+SELECT id, "createdAt", "updatedAt", role, username, password FROM "user" WHERE "username" = $1
+`
+
+func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByUsername, username)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Role,
+		&i.Username,
+		&i.Password,
+	)
+	return i, err
+}
