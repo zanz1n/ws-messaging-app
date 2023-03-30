@@ -1,9 +1,6 @@
 package services
 
 import (
-	"os"
-	"strconv"
-
 	"github.com/redis/go-redis/v9"
 )
 
