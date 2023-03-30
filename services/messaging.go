@@ -65,8 +65,6 @@ func NewMessagingService(pubClient *redis.Client, subClient *redis.Client, db *d
 					log.Printf("Error unmarshalling message: %s", err.Error())
 					continue
 				}
-
-				log.Printf("Received message: %s", msg.Payload)
 				go ms.BroadcastLocal(&bodyParsed)
 			}
 		}()
