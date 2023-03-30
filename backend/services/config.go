@@ -22,7 +22,7 @@ var (
 	requiredEnvVars []string = []string{"REDIS_URI", "DATABASE_URI"}
 )
 
-func GenerateFromEnv() {
+func GenerateConfigsFromEnv() {
 	for _, v := range requiredEnvVars {
 		if _, ok := os.LookupEnv(v); !ok {
 			log.Panicf("environment: variable %s is not set", v)
