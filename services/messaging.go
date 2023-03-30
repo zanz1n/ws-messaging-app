@@ -9,12 +9,13 @@ import (
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/websocket/v2"
-	amqp "github.com/rabbitmq/amqp091-go"
+	"github.com/redis/go-redis/v9"
 	"github.com/zanz1n/ws-messaging-app/internal/dba"
 )
 
 var (
-	mqCtx = context.Background()
+	pubCtx = context.Background()
+	subCtx = context.Background()
 )
 
 type ChatMessage struct {
@@ -23,57 +24,60 @@ type ChatMessage struct {
 }
 
 type MessagingService struct {
-	db        *dba.Queries
-	conns     map[string]*websocket.Conn
-	connMutex *sync.Mutex
-	ch        *amqp.Channel
-	queue     *amqp.Queue
+	db     *dba.Queries
+	conns  map[string]*websocket.Conn
+	connsM *sync.Mutex
+	pub    *redis.Client
+	sub    *redis.Client
 }
 
-func NewMessagingService(ch *amqp.Channel, db *dba.Queries) *MessagingService {
-	queue, err := ch.QueueDeclare("chat", false, false, false, false, nil)
-
-	if err != nil {
-		panic(err)
-	}
-
+func NewMessagingService(pubClient *redis.Client, subClient *redis.Client, db *dba.Queries) *MessagingService {
 	ms := MessagingService{
-		db:        db,
-		conns:     make(map[string]*websocket.Conn),
-		connMutex: &sync.Mutex{},
-		ch:        ch,
-		queue:     &queue,
+		db:     db,
+		conns:  make(map[string]*websocket.Conn),
+		connsM: &sync.Mutex{},
+		pub:    pubClient,
+		sub:    subClient,
 	}
-
-	keepAlive := make(chan bool)
 
 	go func() {
-		msgs, _ := ms.ch.Consume(ms.queue.Name, "", true, false, false, false, nil)
 
-		var bodyParsed ChatMessage
+		sub := ms.sub.Subscribe(subCtx, "chat")
+
+		var (
+			bodyParsed ChatMessage
+			err        error
+			msg        *redis.Message
+		)
 
 		go func() {
-			for m := range msgs {
+			for {
+				msg, err = sub.ReceiveMessage(subCtx)
 
-				json.Unmarshal(m.Body, &bodyParsed)
+				if err != nil {
+					log.Printf("Error receiving message: %s", err.Error())
+					continue
+				}
 
-				log.Printf("[%s]:%s  \x1b[35mWS\x1b[0m\t%s\x1b[0m\t%v",
-					"NONE",
-					"none",
-					"\x1b[31mMESSAGE",
-					bodyParsed,
-				)
+				err = json.Unmarshal([]byte(msg.Payload), &bodyParsed)
+
+				if err != nil {
+					log.Printf("Error unmarshalling message: %s", err.Error())
+					continue
+				}
+
+				log.Printf("Received message: %s", msg.Payload)
+				go ms.BroadcastLocal(&bodyParsed)
 			}
 		}()
-		<-keepAlive
 	}()
 
 	return &ms
 }
 
 func (s *MessagingService) GetConnections() map[string]*websocket.Conn {
-	s.connMutex.Lock()
-	defer s.connMutex.Unlock()
+	s.connsM.Lock()
+	defer s.connsM.Unlock()
 	return s.conns
 }
 
@@ -120,9 +124,9 @@ func (s *MessagingService) AddConn(conn *websocket.Conn) string {
 		"\x1b[32mOPENED",
 	)
 
-	s.connMutex.Lock()
+	s.connsM.Lock()
 
-	defer s.connMutex.Unlock()
+	defer s.connsM.Unlock()
 
 	s.conns[conn.RemoteAddr().String()] = conn
 
@@ -137,17 +141,17 @@ func (s *MessagingService) RemoveConn(addr string) {
 		"\x1b[31mCLOSED",
 	)
 
-	s.connMutex.Lock()
+	s.connsM.Lock()
 
-	defer s.connMutex.Unlock()
+	defer s.connsM.Unlock()
 
 	delete(s.conns, addr)
 }
 
 func (s *MessagingService) BroadcastLocal(message *ChatMessage) {
-	s.connMutex.Lock()
+	s.connsM.Lock()
 
-	defer s.connMutex.Unlock()
+	defer s.connsM.Unlock()
 
 	msgBytes, err := json.Marshal(&message)
 
@@ -171,12 +175,5 @@ func (s *MessagingService) BroadcastGlobal(message *ChatMessage) {
 		return
 	}
 
-	s.ch.PublishWithContext(mqCtx, "", s.queue.Name, false, false,
-		amqp.Publishing{
-			ContentType: "application/json",
-			Body:        msgBytes,
-		},
-	)
-
-	log.Println(s.queue)
+	s.pub.Publish(pubCtx, "chat", msgBytes)
 }
