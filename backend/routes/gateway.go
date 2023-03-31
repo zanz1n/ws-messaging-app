@@ -8,13 +8,14 @@ import (
 
 func ChatGateway(s *services.MessagingService) func(c *websocket.Conn) {
 	return func(c *websocket.Conn) {
-
+		defer c.Close()
 		var (
 			rawMsg []byte
 			err    error
 		)
 
 		connId := s.AddConn(c)
+		defer s.RemoveConn(connId)
 
 		for {
 			_, rawMsg, err = c.ReadMessage()
@@ -41,8 +42,5 @@ func ChatGateway(s *services.MessagingService) func(c *websocket.Conn) {
 				continue
 			}
 		}
-
-		s.RemoveConn(connId)
-
 	}
 }
