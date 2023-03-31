@@ -12,6 +12,7 @@ func ChatGateway(s *services.MessagingService) func(c *websocket.Conn) {
 		var (
 			rawMsg []byte
 			err    error
+			user = c.Locals("user").(*services.UserJwtPayload)
 		)
 
 		connId := s.AddConn(c)
@@ -30,7 +31,7 @@ func ChatGateway(s *services.MessagingService) func(c *websocket.Conn) {
 				continue
 			}
 
-			_, err = s.HanleIncomingMessage(&rawMsg)
+			_, err = s.HanleIncomingMessage(&rawMsg, user)
 
 			if err != nil {
 				err = c.WriteJSON(fiber.Map{

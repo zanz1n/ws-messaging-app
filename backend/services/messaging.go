@@ -18,9 +18,15 @@ var (
 	subCtx = context.Background()
 )
 
+type IncomingChatMessage struct {
+	Content *string `json:"content"`
+	Image   *string `json:"image"`
+}
+
 type ChatMessage struct {
 	Content *string `json:"content"`
 	Image   *string `json:"image"`
+	Author  *string `json:"author"`
 }
 
 type MessagingService struct {
@@ -79,37 +85,41 @@ func (s *MessagingService) GetConnections() map[string]*websocket.Conn {
 	return s.conns
 }
 
-func (s *MessagingService) HanleIncomingMessage(rawPayload *[]byte) (*ChatMessage, error) {
+func (s *MessagingService) HanleIncomingMessage(rawPayload *[]byte, user *UserJwtPayload) (*IncomingChatMessage, error) {
 	var (
-		message ChatMessage
-		err     error
+		messageRaw IncomingChatMessage
+		err        error
 	)
 
-	err = json.Unmarshal(*rawPayload, &message)
+	err = json.Unmarshal(*rawPayload, &messageRaw)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if message.Content != nil {
-		if *message.Content == "" {
-			message.Content = nil
+	if messageRaw.Content != nil {
+		if *messageRaw.Content == "" {
+			messageRaw.Content = nil
 		}
 	}
 
-	if message.Image != nil {
-		if !strings.HasPrefix(*message.Image, "https://") {
+	if messageRaw.Image != nil {
+		if !strings.HasPrefix(*messageRaw.Image, "https://") {
 			return nil, errors.New("image must start with https://")
 		}
 	}
 
-	if message.Content == nil && message.Image == nil {
+	if messageRaw.Content == nil && messageRaw.Image == nil {
 		return nil, errors.New("if image is empty, message content is required")
 	}
 
-	go s.BroadcastGlobal(&message)
+	go s.BroadcastGlobal(&ChatMessage{
+		Content: messageRaw.Content,
+		Image:   messageRaw.Image,
+		Author: &user.ID,
+	})
 
-	return &message, nil
+	return &messageRaw, nil
 }
 
 func (s *MessagingService) AddConn(conn *websocket.Conn) string {
