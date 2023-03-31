@@ -17,11 +17,12 @@ type Configs struct {
 	TlsCertPath   string
 	TlsKeyPath    string
 	RedisDb       int
+	JwtSecret	  string
 }
 
 var (
 	instance        *Configs = nil
-	requiredEnvVars []string = []string{"REDIS_URI", "DATABASE_URI"}
+	requiredEnvVars []string = []string{"REDIS_URI", "DATABASE_URI", "JWT_SECRET"}
 )
 
 func GenerateConfigsFromEnv() {
@@ -35,6 +36,7 @@ func GenerateConfigsFromEnv() {
 	instance.DatabaseUri = os.Getenv("DATABASE_URI")
 	instance.RedisUri = os.Getenv("REDIS_URI")
 	instance.RedisPassword = os.Getenv("REDIS_PASSWORD")
+	instance.JwtSecret = os.Getenv("JWT_SECRET")
 
 	if os.Getenv("APP_ENV") == "" {
 		instance.AppEnv = "development"
