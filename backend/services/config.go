@@ -17,7 +17,8 @@ type Configs struct {
 	TlsCertPath   string
 	TlsKeyPath    string
 	RedisDb       int
-	JwtSecret	  string
+	JwtSecret     string
+	BcryptSalt    int
 }
 
 var (
@@ -37,6 +38,16 @@ func GenerateConfigsFromEnv() {
 	instance.RedisUri = os.Getenv("REDIS_URI")
 	instance.RedisPassword = os.Getenv("REDIS_PASSWORD")
 	instance.JwtSecret = os.Getenv("JWT_SECRET")
+
+	if os.Getenv("BCRYPT_SALT") == "" {
+		instance.BcryptSalt = 12
+	} else {
+		v, err := strconv.Atoi(os.Getenv("BCRYPT_SALT"))
+		if err != nil {
+			log.Panicf("environment: variable BCRYPT_SALT must be an integer")
+		}
+		instance.BcryptSalt = v
+	}
 
 	if os.Getenv("APP_ENV") == "" {
 		instance.AppEnv = "development"
