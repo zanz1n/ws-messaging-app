@@ -63,8 +63,7 @@ func PostSignUp(as *services.AuthService, db *dba.Queries) func(c *fiber.Ctx) er
  */
 func GetSelf() func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{
-			"message": "Amogus",
-		})
+		user := c.Locals("user").(*services.UserJwtPayload)
+		return c.JSON(user)
 	}
 }
