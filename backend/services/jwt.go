@@ -2,7 +2,7 @@ package services
 
 import (
 	"errors"
-	"log"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -24,25 +24,50 @@ func NewJwtService() *JwtService {
 }
 
 func (j *JwtService) GenerateToken(p *UserJwtPayload) (string, error) {
-	token := jwt.New(jwt.SigningMethodEdDSA)
-	claims := token.Claims.(jwt.MapClaims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
+		"id":       p.ID,
+		"username": p.Username,
+		"exp":      time.Now().Add(time.Second * 30).Unix(),
+	})
 
-	claims["id"] = p.ID
-	claims["username"] = p.Username
-	claims["exp"] = time.Now().Add(time.Hour * 24 * 7)
-
-	return token.SignedString(j.token)
+	tokenString, err := token.SignedString([]byte(j.token))
+	return tokenString, err
 }
 
 func (j *JwtService) ValidateToken(rp string) (*UserJwtPayload, error) {
+	var (
+		valId       string
+		valUsername string
+	)
+
 	token, err := jwt.Parse(rp, func(t *jwt.Token) (interface{}, error) {
-		return "", nil
+		var ok bool
+
+		if _, ok = t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("unexpected signing method: " + t.Header["alg"].(string))
+		}
+
+		if valId, ok = t.Claims.(jwt.MapClaims)["id"].(string); !ok {
+			return nil, errors.New("invalid token payload")
+		}
+
+		if valUsername, ok = t.Claims.(jwt.MapClaims)["username"].(string); !ok {
+			return nil, errors.New("invalid token payload")
+		}
+
+		if t.Claims.(jwt.MapClaims)["exp"].(float64) < float64(time.Now().Unix()) {
+			return nil, errors.New("token is expired")
+		}
+
+		return []byte(j.token), nil
 	})
 
-	if err == nil && token.Valid {
-		log.Println(token.Claims)
-		return nil, errors.New("invalid jwt token")
+	if err != nil || !token.Valid {
+		return nil, errors.New(strings.ToLower(err.Error()))
 	}
 
-	return nil, errors.New("invalid jwt token")
+	return &UserJwtPayload{
+		ID:       valId,
+		Username: valUsername,
+	}, nil
 }
