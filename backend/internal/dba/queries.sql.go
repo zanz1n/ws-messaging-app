@@ -7,7 +7,29 @@ package dba
 
 import (
 	"context"
+	"time"
 )
+
+const createUser = `-- name: CreateUser :exec
+INSERT INTO "user" ("username", "password", "updatedAt", "role") VALUES ($1, $2, $3, $4)
+`
+
+type CreateUserParams struct {
+	Username  string
+	Password  string
+	UpdatedAt time.Time
+	Role      UserRole
+}
+
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
+	_, err := q.db.ExecContext(ctx, createUser,
+		arg.Username,
+		arg.Password,
+		arg.UpdatedAt,
+		arg.Role,
+	)
+	return err
+}
 
 const getAllMessages = `-- name: GetAllMessages :many
 SELECT id, "createdAt", "updatedAt", content, "imageUrl", "userId" FROM "message" LIMIT $1
