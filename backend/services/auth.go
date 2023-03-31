@@ -3,7 +3,6 @@ package services
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
 
 	"github.com/zanz1n/ws-messaging-app/internal/dba"
@@ -46,7 +45,6 @@ func (ap *AuthService) AuthenticateUser(name string, passwd string) (string, err
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(passwd))
 
 	if err != nil {
-		fmt.Println(err)
 		return "", errors.New("user and password do not match")
 	}
 
@@ -54,8 +52,6 @@ func (ap *AuthService) AuthenticateUser(name string, passwd string) (string, err
 		ID:       user.ID,
 		Username: user.Username,
 	})
-
-	fmt.Println(err)
 
 	return token, err
 }
