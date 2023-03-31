@@ -3,19 +3,19 @@ CREATE TYPE "UserRole" AS ENUM ('USER', 'ADMIN');
 
 -- Create user table
 CREATE TABLE "user" (
-    "id" TEXT NOT NULL,
+    "id" VARCHAR(36) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "role" "UserRole" NOT NULL DEFAULT 'USER',
-    "username" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
+    "username" VARCHAR(255) NOT NULL,
+    "password" VARCHAR(255) NOT NULL,
 
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
 );
 
 -- Create message table
 CREATE TABLE "message" (
-    "id" TEXT NOT NULL,
+    "id" VARCHAR(36) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "content" TEXT NOT NULL,

@@ -1,5 +1,5 @@
 -- name: CreateUser :exec
-INSERT INTO "user" ("username", "password", "updatedAt", "role") VALUES ($1, $2, $3, $4);
+INSERT INTO "user" ("id", "username", "password", "updatedAt", "role") VALUES ($1, $2, $3, $4, $5);
 
 -- name: GetUserByUsername :one
 SELECT * FROM "user" WHERE "username" = $1;
