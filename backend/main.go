@@ -22,6 +22,8 @@ func init() {
 		}
 	}
 
+	log.SetPrefix(fmt.Sprintf("%v - ", os.Getpid()))
+
 	services.GenerateConfigsFromEnv()
 }
 
@@ -37,8 +39,6 @@ func main() {
 		ServerHeader:  "Fiber",
 		AppName:       "Ws Messaging App",
 	})
-
-	log.SetPrefix(fmt.Sprintf("%v - ", os.Getpid()))
 
 	app.Use(logger.New(logger.Config{
 		Format:     "${pid} - ${time} [${ip}]:${port} ${method} ${path} ${status} ${latency}\n",
