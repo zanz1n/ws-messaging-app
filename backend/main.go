@@ -51,8 +51,8 @@ func main() {
 	routes.NewRouter(app)
 
 	if config.UseTls {
-		app.ListenTLS(config.BindAddr, config.TlsCertPath, config.TlsKeyPath)
+		log.Fatal(app.ListenTLS(config.BindAddr, config.TlsCertPath, config.TlsKeyPath))
 	} else {
-		app.Listen(config.BindAddr)
+		log.Fatal(app.Listen(config.BindAddr))
 	}
 }
