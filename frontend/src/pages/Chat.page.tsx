@@ -1,5 +1,9 @@
+import Header from "../components/Header";
 import "./Chat.page.css";
 
 export default function ChatPage() {
-    return <h1>Chat</h1>;
+    return <>
+        <Header/>
+        <h1>Hello World</h1>
+    </>;
 }
