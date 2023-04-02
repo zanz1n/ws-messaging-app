@@ -6,19 +6,19 @@ import InputLabel from "../components/auth/InputLabel";
 import SubmitButton from "../components/auth/SubmitButton";
 import SwitchPages from "../components/auth/SwitchPage";
 
-// interface RegisterDomData {
-//     username: {
-//         value: string;
-//     };
-//     password: {
-//         value: string;
-//     };
-//     confirmPassword: {
-//         value: string;
-//     };
-// }
+interface RegisterDomData {
+    username: {
+        value: string;
+    };
+    password: {
+        value: string;
+    };
+    confirmPassword: {
+        value: string;
+    };
+}
 
-function validate(target: unknown) {
+function validate(target: unknown): target is RegisterDomData {
     if (target &&
         typeof target == "object" &&
         "username" in target &&
@@ -91,7 +91,7 @@ export default function SignUpPage() {
                 <Form error={error}
                     onSubmit={(e) => {
                         e.preventDefault();
-                        (async(target: any) => {
+                        (async(target: unknown) => {
                             if (validate(target)) {
                                 if (target["password"]["value"] != target["confirmPassword"]["value"]) {
                                     setError("The passwords do not match.");
