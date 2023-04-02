@@ -6,6 +6,7 @@
   "scripts": {
     "build:client": "pnpm --filter frontend build",
     "dev:client": "pnpm --filter frontend dev",
+    "dev:backend": "nodemon --watch './backend' --exec 'go run ./backend/main.go' -e go --signal SIGTERM",
     "dev": "nodemon --ignore './frontend/dist' --watch './' --exec 'pnpm build:client && go run ./backend/main.go' -e ts,tsx,go,css --signal SIGTERM"
   },
   "workspaces": [
