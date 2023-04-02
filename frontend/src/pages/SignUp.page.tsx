@@ -5,6 +5,8 @@ import styles from "../components/auth/Form.module.css";
 import InputLabel from "../components/auth/InputLabel";
 import SubmitButton from "../components/auth/SubmitButton";
 import SwitchPages from "../components/auth/SwitchPage";
+import { useAuth } from "../lib/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface RegisterDomData {
     username: {
@@ -54,6 +56,14 @@ export default function SignUpPage() {
     const [error, setErrorRaw] = useState<string | null>(null);
     
     const [sendable, setSendable] = useState<boolean>(false);
+
+    const { isAuthenticated } = useAuth();
+
+    const navigate = useNavigate();
+
+    if (isAuthenticated) {
+        navigate("/");
+    }
     
     function setError(e: string | null) {
         setErrorRaw(e);

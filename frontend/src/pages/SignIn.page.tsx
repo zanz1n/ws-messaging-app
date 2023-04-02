@@ -6,6 +6,7 @@ import SubmitButton from "../components/auth/SubmitButton";
 import SwitchPages from "../components/auth/SwitchPage";
 import Header from "../components/Header";
 import { useAuth } from "../lib/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface SignInDomData {
     username: {
@@ -51,12 +52,18 @@ export default function SignInPage() {
 
     const [sendable, setSendable] = useState<boolean>(false);
 
-    const { login } = useAuth();
+    const { login, isAuthenticated } = useAuth();
 
     function setError(e: string | null) {
         setErrorRaw(e);
         if (e == null) setSendable(true);
         else setSendable(false);
+    }
+
+    const navigate = useNavigate();
+
+    if (isAuthenticated) {
+        navigate("/");
     }
 
     return (
