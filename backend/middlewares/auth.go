@@ -9,6 +9,9 @@ func NewAuthMiddleware(ap *services.AuthService) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		authHeader := c.Get("Authorization")
 		if authHeader == "" {
+			authHeader = c.Get("Sec-WebSocket-Protocol")
+		}
+		if authHeader == "" {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"error": "missing Authorization header",
 			})
