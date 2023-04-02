@@ -57,7 +57,7 @@ export default function SignUpPage() {
     
     const [sendable, setSendable] = useState<boolean>(false);
 
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, register } = useAuth();
 
     const navigate = useNavigate();
 
@@ -70,8 +70,6 @@ export default function SignUpPage() {
         if (e == null) setSendable(true);
         else setSendable(false);
     }
-
-    // const navigate = useNavigate();
 
     function handlePasswordUpdate(t: "password" | "confirmPassword") {
         return function(e: { target: { value: string; }; }) {
@@ -114,19 +112,22 @@ export default function SignUpPage() {
                                     setError("Please enter a username.");
                                     return;
                                 }
-                                // const result = await register({
-                                //     username: target["username"]["value"],
-                                //     password: target["password"]["value"],
-                                //     confirmPassword: target["confirmPassword"]["value"]
-                                // });
-
-                                // if (result) {
-                                //     setError(null);
-                                //     navigate("/");
-                                //     return;
-                                // } else {
-                                setError("An error occurred while creating your account.");
-                            // }
+                                try {
+                                    await register({
+                                        username: target.username.value,
+                                        password: target.password.value,
+                                        confirmPassword: target.confirmPassword.value
+                                    });
+                                    setError(null);
+                                    navigate("/");
+                                    return;
+                                } catch (e) {
+                                    if (e instanceof Error) {
+                                        setError(e.message);
+                                        return;
+                                    }
+                                    setError("An error occurred while creating your account.");
+                                }
                             }
                         })(e.target);
                     }}>
