@@ -84,5 +84,6 @@
 @media screen and (max-width: 540px) {
     .formContainer {
         width: 94%;
+        padding: 18px;
     }
 }
