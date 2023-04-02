@@ -81,6 +81,19 @@
     color: var(--background);
 }
 
+.switchPages {
+    align-self: center;
+}
+
+.switchPages a {
+    color: var(--cyan);
+}
+
+.switchPages a:hover {
+    color: var(--cyan-hover);
+    text-decoration: underline;
+}
+
 @media screen and (max-width: 540px) {
     .formContainer {
         width: 94%;
