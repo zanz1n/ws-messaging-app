@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./Header.module.css";
+import { useAuth } from "../lib/AuthContext";
 
 export default function Header() {
-    const isAuthenticated = true;
-    const user = { username: "zanz1n", uuid: "22228f55-75e4-4466-ae5a-4adea203e2e3" };
+    const { isAuthenticated, userData: user, logout } = useAuth();
 
     const navigate = useNavigate();
 
@@ -20,12 +20,11 @@ export default function Header() {
                         isAuthenticated ? (
                             <>
                                 <button onClick={() => {
-                                    localStorage.removeItem("token");
-                                    navigate("/auth/signin");
+                                    logout();
                                 }} className={styles.purple}>Logout</button>
                                 <div>
                                     <p>Logged in as</p>
-                                    <p>{user.username}</p>
+                                    <p>{user?.username}</p>
                                 </div>
                             </>
                         ) : (
