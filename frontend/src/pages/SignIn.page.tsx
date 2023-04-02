@@ -65,7 +65,7 @@ export default function SignInPage() {
                         </InputLabel>
 
                         <SubmitButton enabled={sendable} >Log In</SubmitButton>
-                        <SwitchPages plain="New here?" to="/register">Create an account</SwitchPages>
+                        <SwitchPages plain="New here?" to="/auth/signup">Create an account</SwitchPages>
                     </Form>
                 </div>
             </main>

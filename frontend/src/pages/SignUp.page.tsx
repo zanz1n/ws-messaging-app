@@ -142,7 +142,7 @@ export default function SignUpPage() {
 
                     <SubmitButton enabled={sendable} >Create Account</SubmitButton>
 
-                    <SwitchPages plain="Already have an account?" to="/login">Login</SwitchPages>
+                    <SwitchPages plain="Already have an account?" to="/auth/signin">Login</SwitchPages>
 
                 </Form>
             </div>
