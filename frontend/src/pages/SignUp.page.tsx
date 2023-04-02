@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Form from "../components/auth/Form";
 import styles from "../components/auth/Form.module.css";
@@ -61,9 +61,11 @@ export default function SignUpPage() {
 
     const navigate = useNavigate();
 
-    if (isAuthenticated) {
-        navigate("/");
-    }
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate("/");
+        }
+    }, []);
     
     function setError(e: string | null) {
         setErrorRaw(e);

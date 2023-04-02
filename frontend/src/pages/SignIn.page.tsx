@@ -1,5 +1,5 @@
 import styles from "../components/auth/Form.module.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Form from "../components/auth/Form";
 import InputLabel from "../components/auth/InputLabel";
 import SubmitButton from "../components/auth/SubmitButton";
@@ -62,9 +62,11 @@ export default function SignInPage() {
 
     const navigate = useNavigate();
 
-    if (isAuthenticated) {
-        navigate("/");
-    }
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate("/");
+        }
+    }, []);
 
     return (
         <>
@@ -83,6 +85,9 @@ export default function SignInPage() {
                                     const password = target.password.value;
 
                                     await login({ username, password });
+                                    setError(null);
+                                    navigate("/");
+                                    return;
                                 } catch(e: unknown) {
                                     if (e instanceof Error) {
                                         setError(e.message);
