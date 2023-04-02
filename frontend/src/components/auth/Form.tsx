@@ -1,15 +1,14 @@
 import styles from "./Form.module.css";
 
 export interface FormProps {
-    type: "login" | "register";
     error?: string | null;
     onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void | Promise<void>;
     children: React.ReactElement | React.ReactElement[];
 }
 
-export default function Form({ type, error, onSubmit, children }: FormProps) {
+export default function Form({ error, onSubmit, children }: FormProps) {
     return(
-        <form className={type} onSubmit={(e) => {
+        <form className={styles.form} onSubmit={(e) => {
             e.preventDefault();
             onSubmit?.(e);
         }}>

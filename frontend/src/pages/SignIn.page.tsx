@@ -46,11 +46,10 @@ export default function SignInPage() {
             <Header/>
             <main className={styles.main}>
                 <div className={styles.formContainer}>
-                    <Form type="login" error={error} onSubmit={(e) => {
+                    <Form error={error} onSubmit={(e) => {
                         e.preventDefault();
                         (async(target: unknown) => {
                             if (validate(target)) {
-                                return;
                                 setError("The username or password is invalid.");
                             } else {
                                 setError("The username or password is invalid.");
