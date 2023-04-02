@@ -5,8 +5,18 @@ import InputLabel from "../components/auth/InputLabel";
 import SubmitButton from "../components/auth/SubmitButton";
 import SwitchPages from "../components/auth/SwitchPage";
 import Header from "../components/Header";
+import { useAuth } from "../lib/AuthContext";
 
-function validate(target: unknown) {
+interface SignInDomData {
+    username: {
+        value: string;
+    };
+    password: {
+        value: string;
+    };
+}
+
+function validate(target: unknown): target is SignInDomData {
     if (target &&
         typeof target == "object" &&
         "username" in target &&
@@ -37,9 +47,17 @@ function handleValueUpdate(e: React.ChangeEvent<HTMLInputElement>, setSendable: 
 }
 
 export default function SignInPage() {
-    const [error, setError] = useState<string | null>(null);
+    const [error, setErrorRaw] = useState<string | null>(null);
 
     const [sendable, setSendable] = useState<boolean>(false);
+
+    const { login } = useAuth();
+
+    function setError(e: string | null) {
+        setErrorRaw(e);
+        if (e == null) setSendable(true);
+        else setSendable(false);
+    }
 
     return (
         <>
@@ -53,7 +71,18 @@ export default function SignInPage() {
                         e.preventDefault();
                         (async(target: unknown) => {
                             if (validate(target)) {
-                                setError("The username or password is invalid.");
+                                try {
+                                    const username = target.username.value;
+                                    const password = target.password.value;
+
+                                    await login({ username, password });
+                                } catch(e: unknown) {
+                                    if (e instanceof Error) {
+                                        setError(e.message);
+                                    } else {
+                                        setError("An unknown error has occurred.");
+                                    }
+                                }
                             } else {
                                 setError("The username or password is invalid.");
                             }
