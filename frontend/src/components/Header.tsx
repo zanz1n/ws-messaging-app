@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "./Header.module.css";
 
 export default function Header() {
@@ -11,7 +11,9 @@ export default function Header() {
         <div className={styles.header}>
             <header className={styles.headerContainer}>
                 <div className={styles.left}>
-                    <h1 className={styles.title}>Ws App</h1>
+                    <Link to="/">
+                        <h1 className={styles.title}>Ws App</h1>
+                    </Link>
                 </div>
                 <div className={styles.right}>
                     {
