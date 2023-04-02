@@ -20,6 +20,7 @@ export interface RegisterProps extends LoginProps {
 export interface AuthContext {
     get isAuthenticated(): boolean;
     get userData(): AuthedUserData | null;
+    get token(): string | null;
     login(props: LoginProps): Promise<void>;
     register(props: RegisterProps): Promise<void>;
     logout: () => void;
@@ -130,6 +131,7 @@ export function AuthProvider({ children }: { children: React.ReactElement | Reac
     const ctx = useMemo(() => ({
         get isAuthenticated() { return isAuthenticated(); },
         get userData() { return getUserData(); },
+        get token() { return token(); },
         login: (props: LoginProps) => login(props),
         logout: () => logout(),
         register: (props: RegisterProps) => register(props),
