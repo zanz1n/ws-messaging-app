@@ -46,6 +46,9 @@ export default function SignInPage() {
             <Header/>
             <main className={styles.main}>
                 <div className={styles.formContainer}>
+                    <div className={styles.formTitle}>
+                        <h1>Sign In</h1>
+                    </div>
                     <Form error={error} onSubmit={(e) => {
                         e.preventDefault();
                         (async(target: unknown) => {

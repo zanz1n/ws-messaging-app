@@ -91,6 +91,10 @@
     color: var(--cyan);
 }
 
+.formTitle {
+    text-align: center;
+}
+
 .switchPages a:hover {
     color: var(--cyan-hover);
     text-decoration: underline;

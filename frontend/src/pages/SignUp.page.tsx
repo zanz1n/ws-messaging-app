@@ -88,6 +88,9 @@ export default function SignUpPage() {
         <Header/>
         <main className={styles.main}>
             <div className={styles.formContainer}>
+                <div className={styles.formTitle}>
+                    <h1>Sign Up</h1>
+                </div>
                 <Form error={error}
                     onSubmit={(e) => {
                         e.preventDefault();
