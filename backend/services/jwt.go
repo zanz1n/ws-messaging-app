@@ -27,7 +27,7 @@ func (j *JwtService) GenerateToken(p *UserJwtPayload) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
 		"id":       p.ID,
 		"username": p.Username,
-		"exp":      time.Now().Add(time.Second * 30).Unix(),
+		"exp":      time.Now().Add(time.Hour * 24 * 7).Unix(),
 	})
 
 	tokenString, err := token.SignedString([]byte(j.token))
