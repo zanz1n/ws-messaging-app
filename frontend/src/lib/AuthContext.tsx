@@ -56,42 +56,50 @@ export function AuthProvider({ children }: { children: React.ReactElement | Reac
     }
 
     async function login(props: LoginProps) {
-        const res = await fetch(`${clientConfig.ApiUri}/auth/signin`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(props)
-        }).then(res => res.json()).catch(() => null) as unknown;
+        try {
+            const resRaw = await fetch(`${clientConfig.ApiUri}/auth/signin`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(props)
+            });
 
-        if (res && typeof res == "object" && "token" in res && typeof res["token"] == "string") {
-            const uid = crypto.randomUUID();
-            localStorage.setItem("token", uid);
-            localStorage.setItem(uid, res.token);
-            return;
+            const res = await resRaw.json();
+
+            if (res && typeof res == "object" && "token" in res && typeof res["token"] == "string") {
+                const uid = crypto.randomUUID();
+                localStorage.setItem("token", uid);
+                localStorage.setItem(uid, res.token);
+                return;
+            }
+        } catch (e) {
+            throw new Error("An unexpected error occurred. Check your internet connection and try again.");
         }
-        throw new Error("The username or password do not match.");
     }
 
     async function register({ username, password, confirmPassword }: RegisterProps) {
         if (password != confirmPassword) throw new Error("The passwords do not match.");
 
-        const res = await fetch(`${clientConfig.ApiUri}/auth/signup`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ username, password })
-        }).then(res => res.json()).catch(() => null) as unknown;
-
-        if (res && typeof res == "object" && "token" in res && typeof res["token"] == "string") {
-            const uid = crypto.randomUUID();
-            localStorage.setItem("token", uid);
-            localStorage.setItem(uid, res.token);
-            return;
+        try {
+            const res = await fetch(`${clientConfig.ApiUri}/auth/signup`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username, password })
+            });
+            const body = await res.json();
+    
+            if (body && typeof body == "object" && "token" in body && typeof body["token"] == "string") {
+                const uid = crypto.randomUUID();
+                localStorage.setItem("token", uid);
+                localStorage.setItem(uid, body.token);
+                return;
+            }
+        } catch (e) {
+            throw new Error("An unexpected error occurred. Check your internet connection and try again.");
         }
-
-        throw new Error("The username is already taken.");
     }
 
     function getUserData() {
