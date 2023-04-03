@@ -4,7 +4,6 @@ import SignInPage from "./pages/SignIn.page";
 import SignUpPage from "./pages/SignUp.page";
 import ChatPage from "./pages/Chat.page";
 import { useEffect } from "react";
-import { SocketProvider } from "./lib/SocketContext";
 import { ErrorBoundary } from "react-error-boundary";
 
 function RedirectFallback() {
@@ -18,9 +17,7 @@ function RedirectFallback() {
 function ProtectedRoute({ children }: { children: JSX.Element }) {
     return <>
         <ErrorBoundary FallbackComponent={RedirectFallback}>
-            <SocketProvider>
-                {children}
-            </SocketProvider>
+            {children}
         </ErrorBoundary>
     </>;
 }
