@@ -26,7 +26,7 @@ type IncomingChatMessage struct {
 type ChatMessage struct {
 	Content *string `json:"content"`
 	Image   *string `json:"image"`
-	Author  *string `json:"author"`
+	Author  *UserJwtPayload `json:"author"`
 }
 
 type MessagingService struct {
@@ -116,7 +116,10 @@ func (s *MessagingService) HanleIncomingMessage(rawPayload *[]byte, user *UserJw
 	go s.BroadcastGlobal(&ChatMessage{
 		Content: messageRaw.Content,
 		Image:   messageRaw.Image,
-		Author: &user.ID,
+		Author: &UserJwtPayload{
+			ID:   user.ID,
+			Username: user.Username,
+		},
 	})
 
 	return &messageRaw, nil
