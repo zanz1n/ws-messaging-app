@@ -18,7 +18,7 @@ CREATE TABLE "message" (
     "id" VARCHAR(36) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "content" TEXT NOT NULL,
+    "content" TEXT,
     "imageUrl" TEXT,
     "userId" TEXT NOT NULL,
 

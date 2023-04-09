@@ -57,7 +57,7 @@ type Message struct {
 	ID        string
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	Content   string
+	Content   sql.NullString
 	ImageUrl  sql.NullString
 	UserId    string
 }
