@@ -14,8 +14,8 @@ import (
 type UserRole string
 
 const (
-	UserRoleUSER  UserRole = "USER"
 	UserRoleADMIN UserRole = "ADMIN"
+	UserRoleUSER  UserRole = "USER"
 )
 
 func (e *UserRole) Scan(src interface{}) error {
