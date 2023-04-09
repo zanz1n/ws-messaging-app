@@ -4,9 +4,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
 	"github.com/zanz1n/ws-messaging-app/services"
+	"github.com/zanz1n/ws-messaging-app/services/ws"
 )
 
-func ChatGateway(s *services.MessagingService) func(c *websocket.Conn) {
+func ChatGateway(s *ws.WebsocketService) func(c *websocket.Conn) {
 	return func(c *websocket.Conn) {
 		defer c.Close()
 		var (
@@ -31,7 +32,7 @@ func ChatGateway(s *services.MessagingService) func(c *websocket.Conn) {
 				continue
 			}
 
-			_, err = s.HanleIncomingMessage(&rawMsg, user)
+			err = s.HandleRawPayload(&rawMsg, user)
 
 			if err != nil {
 				err = c.WriteJSON(fiber.Map{

@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/websocket/v2"
 	"github.com/zanz1n/ws-messaging-app/middlewares"
 	"github.com/zanz1n/ws-messaging-app/services"
+	"github.com/zanz1n/ws-messaging-app/services/ws"
 )
 
 var validate = validator.New()
@@ -34,11 +35,11 @@ func NewRouter(app *fiber.App) {
 
 	_ = conn
 
-	messagingService := services.NewMessagingService(publisher, subscriber, db)
+	wsService := ws.NewWebsocketService(publisher, subscriber)
 
 	app.Use("/api/gateway", middlewares.NewWebsocketMiddleware())
 	app.Use("/api/gateway", middlewares.NewAuthMiddleware(authService))
-	app.Get("/api/gateway", websocket.New(ChatGateway(messagingService)))
+	app.Get("/api/gateway", websocket.New(ChatGateway(wsService)))
 
 	app.Post("/api/auth/signin", PostSignIn(authService))
 
