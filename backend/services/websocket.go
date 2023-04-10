@@ -1,21 +1,18 @@
-package ws
+package services
 
 import (
-	"errors"
+	"context"
 	"log"
 	"strings"
 	"sync"
 
-	"github.com/go-playground/validator/v10"
-	"github.com/goccy/go-json"
 	"github.com/gofiber/websocket/v2"
 	"github.com/redis/go-redis/v9"
-	"github.com/zanz1n/ws-messaging-app/services"
 )
 
 type BaseWebsocketEvent struct {
-	Type string      `json:"type" validate:"required"`
-	Data interface{} `json:"data" validate:"required"`
+	Type string                 `json:"type" validate:"required"`
+	Data map[string]interface{} `json:"data" validate:"required"`
 }
 
 type WebsocketService struct {
@@ -23,7 +20,6 @@ type WebsocketService struct {
 	ConnsM *sync.Mutex
 	Pub    *redis.Client
 	Sub    *redis.Client
-	msgH   *MessageEventHandler
 }
 
 func NewWebsocketService(pubClient *redis.Client, subClient *redis.Client) *WebsocketService {
@@ -33,6 +29,8 @@ func NewWebsocketService(pubClient *redis.Client, subClient *redis.Client) *Webs
 		Pub:    pubClient,
 		Sub:    subClient,
 	}
+
+	go SubscribeOnGlobalWs(&ws)
 
 	return &ws
 }
@@ -77,54 +75,22 @@ func (ws *WebsocketService) RemoveConn(addr string) {
 	delete(ws.conns, addr)
 }
 
-func (ws *WebsocketService) HandleRawPayload(p *[]byte, user *services.UserJwtPayload) error {
-	var parsed = BaseWebsocketEvent{}
-
-	if err := json.Unmarshal(*p, &parsed); err != nil {
-		return err
-	}
-
-	if parsed.Type == "message" {
-		msgParsed := MessageWebsocketEvent{}
-		if err := json.Unmarshal(*p, &msgParsed); err != nil {
-			return err
-		}
-
-		if err := validator.New().Struct(msgParsed); err != nil {
-			return err
-		}
-
-		log.Println(msgParsed.Data)
-		return nil
-		// return ws.msgH.Handle(&msgParsed.Data, user)
-	}
-
-	return errors.New("invalid payload type")
-}
-
-/*
-Must be launched inside a goroutine and payload must be
-a pointer to a json resolvable interface
-
-	go w.Broadcast(&map[string]interface{}{
-		"prop": "value",
-	})
-*/
-func (ws *WebsocketService) Broadcast(payload interface{}) {
+func (ws *WebsocketService) BroadcastLocal(payload []byte) {
 	ws.ConnsM.Lock()
 
 	defer ws.ConnsM.Unlock()
 
-	msgBytes, err := json.Marshal(payload)
-
-	if err != nil {
-		return
-	}
-
 	for _, conn := range ws.conns {
-		err = conn.WriteMessage(1, msgBytes)
+		err := conn.WriteMessage(1, payload)
 		if err != nil {
 			log.Printf("error writing message to connection: %s", err.Error())
 		}
+	}
+}
+
+func (ws *WebsocketService) BroadcastRemote(payload []byte) {
+	err := ws.Pub.Publish(context.Background(), "ws_global", payload).Err()
+	if err != nil {
+		log.Printf("error publishing message to redis: %s", err.Error())
 	}
 }
