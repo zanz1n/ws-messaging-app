@@ -109,43 +109,22 @@ func (q *Queries) GetAllMessages(ctx context.Context, limit int32) ([]Message, e
 	return items, nil
 }
 
-const getMessagesByUser = `-- name: GetMessagesByUser :many
-SELECT id, "createdAt", "updatedAt", content, "imageUrl", "userId" FROM "message" WHERE "userId" = $1 LIMIT $2
+const getMessageById = `-- name: GetMessageById :one
+SELECT id, "createdAt", "updatedAt", content, "imageUrl", "userId" FROM "message" WHERE "id" = $1
 `
 
-type GetMessagesByUserParams struct {
-	UserId string
-	Limit  int32
-}
-
-func (q *Queries) GetMessagesByUser(ctx context.Context, arg GetMessagesByUserParams) ([]Message, error) {
-	rows, err := q.db.QueryContext(ctx, getMessagesByUser, arg.UserId, arg.Limit)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Message
-	for rows.Next() {
-		var i Message
-		if err := rows.Scan(
-			&i.ID,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.Content,
-			&i.ImageUrl,
-			&i.UserId,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+func (q *Queries) GetMessageById(ctx context.Context, id string) (Message, error) {
+	row := q.db.QueryRowContext(ctx, getMessageById, id)
+	var i Message
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Content,
+		&i.ImageUrl,
+		&i.UserId,
+	)
+	return i, err
 }
 
 const getMessagesByUserId = `-- name: GetMessagesByUserId :many
