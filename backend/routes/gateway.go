@@ -24,7 +24,16 @@ func ChatGateway(s *services.WebsocketService) func(c *websocket.Conn) {
 			})
 		}
 
-		heartbeat := utils.NewWebsocketHeartbeat(10)
+		keepAlive := make(chan bool)
+
+		heartbeat := utils.NewWebsocketHeartbeat(10, keepAlive)
+
+		c.SetCloseHandler(func(code int, text string) error {
+			keepAlive <- true
+			return nil
+		})
+
+		go heartbeat.Start(c)
 
 		go func() {
 			var (
@@ -36,12 +45,7 @@ func ChatGateway(s *services.WebsocketService) func(c *websocket.Conn) {
 
 			for {
 				if _, payload, err = c.ReadMessage(); err != nil {
-					if err = c.WriteJSON(fiber.Map{
-						"error": err.Error(),
-					}); err != nil {
-						break
-					}
-					continue
+					break
 				}
 
 				if size = len(payload); size == 0 || size > 1024 {
@@ -58,6 +62,7 @@ func ChatGateway(s *services.WebsocketService) func(c *websocket.Conn) {
 							break
 						}
 					}
+					continue
 				}
 
 				data = utils.HeartbeatPayload{}
@@ -82,6 +87,6 @@ func ChatGateway(s *services.WebsocketService) func(c *websocket.Conn) {
 			}
 		}()
 
-		heartbeat.Start(c)
+		<-keepAlive
 	}
 }

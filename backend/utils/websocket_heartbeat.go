@@ -13,11 +13,13 @@ type HeartbeatPayload struct {
 type WebsocketHeartbeat struct {
 	SInterval int
 	lastPing  time.Time
+	keepAlive chan bool
 }
 
-func NewWebsocketHeartbeat(interval int) *WebsocketHeartbeat {
+func NewWebsocketHeartbeat(interval int, keepAlive chan bool) *WebsocketHeartbeat {
 	return &WebsocketHeartbeat{
 		SInterval: interval,
+		keepAlive: keepAlive,
 	}
 }
 
@@ -30,6 +32,7 @@ func (h *WebsocketHeartbeat) Start(conn *websocket.Conn) {
 		time.Sleep(time.Duration(h.SInterval) * time.Second)
 
 		if time.Since(h.lastPing) > time.Duration(h.SInterval)*time.Second {
+			h.keepAlive <- true
 			break
 		}
 	}
