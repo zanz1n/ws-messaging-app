@@ -107,3 +107,17 @@ func (s *MessagesService) Delete(id string) error {
 
 	return err
 }
+
+func (s *MessagesService) IsAllowed(userId string, msgId string) (bool, error) {
+	msg, err := s.db.GetMessageById(context.Background(), msgId)
+
+	if err != nil {
+		return false, err
+	}
+
+	if msg.UserId == userId {
+		return true, nil
+	}
+
+	return false, nil
+}
