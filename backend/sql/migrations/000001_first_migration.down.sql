@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS "message";
+
+DROP TABLE IF EXISTS "user";
+
+DROP TYPE IF EXISTS "UserRole";
