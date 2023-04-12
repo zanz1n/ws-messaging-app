@@ -11,12 +11,12 @@ type HeartbeatPayload struct {
 }
 
 type WebsocketHeartbeat struct {
-	SInterval int
+	SInterval uint
 	lastPing  time.Time
 	keepAlive chan bool
 }
 
-func NewWebsocketHeartbeat(interval int, keepAlive chan bool) *WebsocketHeartbeat {
+func NewWebsocketHeartbeat(interval uint, keepAlive chan bool) *WebsocketHeartbeat {
 	return &WebsocketHeartbeat{
 		SInterval: interval,
 		keepAlive: keepAlive,

@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/goccy/go-json"
@@ -9,6 +10,8 @@ import (
 	"github.com/zanz1n/ws-messaging-app/services"
 	"github.com/zanz1n/ws-messaging-app/utils"
 )
+
+const interval uint = 32
 
 func ChatGateway(s *services.WebsocketService) func(c *websocket.Conn) {
 	return func(c *websocket.Conn) {
@@ -20,13 +23,13 @@ func ChatGateway(s *services.WebsocketService) func(c *websocket.Conn) {
 		if hostname, err := os.Hostname(); err == nil {
 			c.WriteJSON(fiber.Map{
 				"instanceId": hostname,
-				"heartbeat":  "10s",
+				"heartbeat":  fmt.Sprintf("%v", interval),
 			})
 		}
 
 		keepAlive := make(chan bool)
 
-		heartbeat := utils.NewWebsocketHeartbeat(10, keepAlive)
+		heartbeat := utils.NewWebsocketHeartbeat(interval, keepAlive)
 
 		c.SetCloseHandler(func(code int, text string) error {
 			keepAlive <- true
