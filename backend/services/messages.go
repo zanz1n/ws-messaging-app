@@ -41,7 +41,7 @@ func NewMessagesService(db *dba.Queries, ws *WebsocketService) *MessagesService 
 	}
 }
 
-func (s *MessagesService) Publish(data *CreateMessageDto) (*dba.Message, error) {
+func (s *MessagesService) Publish(data *CreateMessageDto) (*dba.Message, int, error) {
 
 	message := dba.CreateMessageParams{
 		ID:        uuid.New().String(),
@@ -73,18 +73,18 @@ func (s *MessagesService) Publish(data *CreateMessageDto) (*dba.Message, error) 
 	payload, err := json.Marshal(&broadcast)
 
 	if err != nil {
-		return nil, errors.New("failed to marshal message")
+		return nil, 500, errors.New("failed to marshal message")
 	}
 
 	result, err := s.db.CreateMessage(context.Background(), message)
 
 	if err != nil {
-		return nil, errors.New("message creation failed, try again later")
+		return nil, 500, errors.New("message creation failed, try again later")
 	}
 
 	s.ws.BroadcastRemote(payload)
 
-	return &result, err
+	return &result, 200, err
 }
 
 func (s *MessagesService) Delete(id string) error {
