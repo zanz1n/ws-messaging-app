@@ -26,6 +26,6 @@ CREATE UNIQUE INDEX "user_username_key" ON "user"("username");
 
 CREATE INDEX "user_id_username_idx" ON "user"("id", "username");
 
-CREATE INDEX "message_id_userId_createdAt_idx" ON "message"("id", "userId", "createdAt");
+CREATE INDEX "message_id_createdAt_userId_idx" ON "message"("id", "createdAt", "userId");
 
 ALTER TABLE "message" ADD CONSTRAINT "message_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
