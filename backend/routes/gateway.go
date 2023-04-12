@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/goccy/go-json"
@@ -11,7 +10,10 @@ import (
 	"github.com/zanz1n/ws-messaging-app/utils"
 )
 
-const interval uint = 32
+const (
+	wsBodyMax  int  = 128
+	hbInterval uint = 32
+)
 
 func ChatGateway(s *services.WebsocketService) func(c *websocket.Conn) {
 	return func(c *websocket.Conn) {
@@ -23,13 +25,13 @@ func ChatGateway(s *services.WebsocketService) func(c *websocket.Conn) {
 		if hostname, err := os.Hostname(); err == nil {
 			c.WriteJSON(fiber.Map{
 				"instanceId": hostname,
-				"heartbeat":  fmt.Sprintf("%v", interval),
+				"heartbeat":  hbInterval,
 			})
 		}
 
 		keepAlive := make(chan bool)
 
-		heartbeat := utils.NewWebsocketHeartbeat(interval, keepAlive)
+		heartbeat := utils.NewWebsocketHeartbeat(hbInterval, keepAlive)
 
 		c.SetCloseHandler(func(code int, text string) error {
 			keepAlive <- true
@@ -41,7 +43,7 @@ func ChatGateway(s *services.WebsocketService) func(c *websocket.Conn) {
 		go func() {
 			var (
 				err     error
-				payload []byte = make([]byte, 1024)
+				payload []byte = make([]byte, wsBodyMax)
 				data    utils.HeartbeatPayload
 				size    int
 			)
@@ -51,8 +53,8 @@ func ChatGateway(s *services.WebsocketService) func(c *websocket.Conn) {
 					break
 				}
 
-				if size = len(payload); size == 0 || size > 1024 {
-					if size > 1024 {
+				if size = len(payload); size == 0 || size > wsBodyMax {
+					if size > wsBodyMax {
 						if err = c.WriteJSON(fiber.Map{
 							"error": "payload too large",
 						}); err != nil {
@@ -83,6 +85,12 @@ func ChatGateway(s *services.WebsocketService) func(c *websocket.Conn) {
 					heartbeat.Ping()
 					if err = c.WriteJSON(fiber.Map{
 						"type": "pong",
+					}); err != nil {
+						break
+					}
+				} else {
+					if err = c.WriteJSON(fiber.Map{
+						"error": "only ping events are supported",
 					}); err != nil {
 						break
 					}
