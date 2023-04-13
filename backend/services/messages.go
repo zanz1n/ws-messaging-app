@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"log"
 	"time"
 
 	"github.com/goccy/go-json"
@@ -18,10 +19,25 @@ type CreateMessageDto struct {
 }
 
 type MessageCreatePayload struct {
-	Type    string  `json:"type"`
-	ID      string  `json:"id"`
-	Image   *string `json:"image"`
-	Content *string `json:"content"`
+	Type    string         `json:"type"`
+	ID      string         `json:"id"`
+	User    UserJwtPayload `json:"user"`
+	Image   *string        `json:"image"`
+	Content *string        `json:"content"`
+}
+
+type UserReturnedOnMessage struct {
+	ID       string `json:"id"`
+	Username string `json:"username"`
+}
+
+type MessageCreateReturnedData struct {
+	ID        string    `json:"id"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	User      UserReturnedOnMessage
+	Image     *string `json:"image"`
+	Content   *string `json:"content"`
 }
 
 type MessageDeletePayload struct {
@@ -41,7 +57,10 @@ func NewMessagesService(db *dba.Queries, ws *WebsocketService) *MessagesService 
 	}
 }
 
-func (s *MessagesService) Publish(data *CreateMessageDto) (*dba.Message, int, error) {
+func (s *MessagesService) Publish(data *CreateMessageDto) (*MessageCreateReturnedData, int, error) {
+	if data.Content == "" && data.Image == "" {
+		return nil, 400, errors.New("content and image can't be empty at the same time")
+	}
 
 	message := dba.CreateMessageParams{
 		ID:        uuid.New().String(),
@@ -50,24 +69,25 @@ func (s *MessagesService) Publish(data *CreateMessageDto) (*dba.Message, int, er
 	}
 
 	broadcast := MessageCreatePayload{
-		Type: "messageCreated",
-		ID:   message.ID,
+		Type:    "messageCreated",
+		ID:      message.ID,
+		User:    data.User,
+		Content: &data.Content,
+		Image:   &data.Image,
 	}
 
-	if data.Content != "" {
-		*broadcast.Content = data.Content
-		message.Content = sql.NullString{String: data.Content, Valid: true}
-	} else {
-		broadcast.Image = nil
+	if data.Content == "" {
+		broadcast.Content = nil
 		message.Content = sql.NullString{String: "", Valid: false}
+	} else {
+		message.Content = sql.NullString{String: data.Content, Valid: true}
 	}
 
-	if data.Image != "" {
-		*broadcast.Image = data.Image
-		message.ImageUrl = sql.NullString{String: data.Image, Valid: true}
-	} else {
+	if data.Image == "" {
 		broadcast.Image = nil
 		message.ImageUrl = sql.NullString{String: "", Valid: false}
+	} else {
+		message.ImageUrl = sql.NullString{String: data.Image, Valid: true}
 	}
 
 	payload, err := json.Marshal(&broadcast)
@@ -79,12 +99,23 @@ func (s *MessagesService) Publish(data *CreateMessageDto) (*dba.Message, int, er
 	result, err := s.db.CreateMessage(context.Background(), message)
 
 	if err != nil {
+		log.Printf("error while creating message: %s", err.Error())
 		return nil, 500, errors.New("message creation failed, try again later")
 	}
 
 	s.ws.BroadcastRemote(payload)
 
-	return &result, 200, err
+	return &MessageCreateReturnedData{
+		ID:        result.ID,
+		CreatedAt: result.CreatedAt,
+		UpdatedAt: result.UpdatedAt,
+		User:      UserReturnedOnMessage{
+			ID: data.User.ID,
+			Username: data.User.Username,
+		},
+		Image: broadcast.Image,
+		Content: broadcast.Content,
+	}, 200, err
 }
 
 func (s *MessagesService) Delete(id string) error {
