@@ -57,12 +57,6 @@ func (s *MessagesService) Publish(data *CreateMessageDto) (*MessageCreateReturne
 		message.ImageUrl = sql.NullString{String: data.Image, Valid: true}
 	}
 
-	payload, err := json.Marshal(&broadcast)
-
-	if err != nil {
-		return nil, 500, errors.New("failed to marshal message")
-	}
-
 	result, err := s.db.CreateMessage(context.Background(), message)
 
 	if err != nil {
@@ -70,12 +64,21 @@ func (s *MessagesService) Publish(data *CreateMessageDto) (*MessageCreateReturne
 		return nil, 500, errors.New("message creation failed, try again later")
 	}
 
+	broadcast.CreatedAt = result.CreatedAt.Unix()
+	broadcast.UpdatedAt = result.UpdatedAt.Unix()
+
+	payload, err := json.Marshal(&broadcast)
+
+	if err != nil {
+		return nil, 500, errors.New("failed to marshal message")
+	}
+
 	s.ws.BroadcastRemote(payload)
 
 	return &MessageCreateReturnedData{
 		ID:        result.ID,
-		CreatedAt: result.CreatedAt,
-		UpdatedAt: result.UpdatedAt,
+		CreatedAt: result.CreatedAt.Unix(),
+		UpdatedAt: result.CreatedAt.Unix(),
 		User: UserReturnedOnMessage{
 			ID:       data.User.ID,
 			Username: data.User.Username,

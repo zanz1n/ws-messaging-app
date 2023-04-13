@@ -1,9 +1,5 @@
 package services
 
-import (
-	"time"
-)
-
 type CreateMessageDto struct {
 	Content string         `json:"content"`
 	Image   string         `json:"image"`
@@ -11,11 +7,13 @@ type CreateMessageDto struct {
 }
 
 type MessageCreatePayload struct {
-	Type    string         `json:"type"`
-	ID      string         `json:"id"`
-	User    UserJwtPayload `json:"user"`
-	Image   *string        `json:"image"`
-	Content *string        `json:"content"`
+	Type      string         `json:"type"`
+	ID        string         `json:"id"`
+	CreatedAt int64          `json:"createdAt"`
+	UpdatedAt int64          `json:"updatedAt"`
+	User      UserJwtPayload `json:"user"`
+	Image     *string        `json:"image"`
+	Content   *string        `json:"content"`
 }
 
 type UserReturnedOnMessage struct {
@@ -24,9 +22,9 @@ type UserReturnedOnMessage struct {
 }
 
 type MessageCreateReturnedData struct {
-	ID        string    `json:"id"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	ID        string `json:"id"`
+	CreatedAt int64  `json:"createdAt"`
+	UpdatedAt int64  `json:"updatedAt"`
 	User      UserReturnedOnMessage
 	Image     *string `json:"image"`
 	Content   *string `json:"content"`
