@@ -1,7 +1,11 @@
 package utils
 
-import "github.com/google/uuid"
+import nanoid "github.com/matoous/go-nanoid/v2"
 
 func RandomId() string {
-	return uuid.New().String()
+	id, err := nanoid.New()
+	if err != nil {
+		panic(err)
+	}
+	return id
 }
