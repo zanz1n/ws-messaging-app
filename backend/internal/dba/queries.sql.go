@@ -205,6 +205,45 @@ func (q *Queries) GetMessagesByUsername(ctx context.Context, arg GetMessagesByUs
 	return items, nil
 }
 
+const getMessagesWithOffset = `-- name: GetMessagesWithOffset :many
+SELECT id, "createdAt", "updatedAt", content, "imageUrl", "userId" FROM "message" WHERE "createdAt" > $1 ORDER BY "createdAt" DESC LIMIT $2
+`
+
+type GetMessagesWithOffsetParams struct {
+	CreatedAt time.Time
+	Limit     int32
+}
+
+func (q *Queries) GetMessagesWithOffset(ctx context.Context, arg GetMessagesWithOffsetParams) ([]Message, error) {
+	rows, err := q.db.QueryContext(ctx, getMessagesWithOffset, arg.CreatedAt, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Message
+	for rows.Next() {
+		var i Message
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Content,
+			&i.ImageUrl,
+			&i.UserId,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUserByUsername = `-- name: GetUserByUsername :one
 SELECT id, "createdAt", "updatedAt", role, username, password FROM "user" WHERE "username" = $1
 `
