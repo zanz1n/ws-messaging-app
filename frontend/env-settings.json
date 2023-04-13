@@ -1,4 +1,4 @@
 {
-    "ApiUri": "http://localhost:3000/api",
-    "WsEndpoint": "ws://localhost:3000/api/gateway"
+    "ApiUri": "http://localhost:3333/api",
+    "WsEndpoint": "ws://localhost:3333/api/gateway"
 }
