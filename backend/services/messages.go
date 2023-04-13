@@ -64,8 +64,8 @@ func (s *MessagesService) Publish(data *CreateMessageDto) (*MessageCreateReturne
 		return nil, 500, errors.New("message creation failed, try again later")
 	}
 
-	broadcast.CreatedAt = result.CreatedAt.Unix()
-	broadcast.UpdatedAt = result.UpdatedAt.Unix()
+	broadcast.CreatedAt = result.CreatedAt.UnixMilli()
+	broadcast.UpdatedAt = result.UpdatedAt.UnixMilli()
 
 	payload, err := json.Marshal(&broadcast)
 
@@ -77,8 +77,8 @@ func (s *MessagesService) Publish(data *CreateMessageDto) (*MessageCreateReturne
 
 	return &MessageCreateReturnedData{
 		ID:        result.ID,
-		CreatedAt: result.CreatedAt.Unix(),
-		UpdatedAt: result.CreatedAt.Unix(),
+		CreatedAt: result.CreatedAt.UnixMilli(),
+		UpdatedAt: result.CreatedAt.UnixMilli(),
 		User: UserReturnedOnMessage{
 			ID:       data.User.ID,
 			Username: data.User.Username,
