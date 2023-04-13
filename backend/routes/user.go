@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 	"github.com/zanz1n/ws-messaging-app/internal/dba"
 	"github.com/zanz1n/ws-messaging-app/services"
+	"github.com/zanz1n/ws-messaging-app/utils"
 )
 
 type UserCreatePayload struct {
@@ -39,7 +39,7 @@ func PostSignUp(as *services.AuthService, db *dba.Queries) func(c *fiber.Ctx) er
 			Password:  as.GenerateHash(body.Password),
 			UpdatedAt: time.Now(),
 			Role:      "USER",
-			ID:        uuid.New().String(),
+			ID:        utils.RandomId(),
 		})
 
 		if err != nil {

@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/goccy/go-json"
-	"github.com/google/uuid"
 	"github.com/zanz1n/ws-messaging-app/internal/dba"
+	"github.com/zanz1n/ws-messaging-app/utils"
 )
 
 type CreateMessageDto struct {
@@ -63,7 +63,7 @@ func (s *MessagesService) Publish(data *CreateMessageDto) (*MessageCreateReturne
 	}
 
 	message := dba.CreateMessageParams{
-		ID:        uuid.New().String(),
+		ID:        utils.RandomId(),
 		UserId:    data.User.ID,
 		UpdatedAt: time.Now(),
 	}
@@ -109,11 +109,11 @@ func (s *MessagesService) Publish(data *CreateMessageDto) (*MessageCreateReturne
 		ID:        result.ID,
 		CreatedAt: result.CreatedAt,
 		UpdatedAt: result.UpdatedAt,
-		User:      UserReturnedOnMessage{
-			ID: data.User.ID,
+		User: UserReturnedOnMessage{
+			ID:       data.User.ID,
 			Username: data.User.Username,
 		},
-		Image: broadcast.Image,
+		Image:   broadcast.Image,
 		Content: broadcast.Content,
 	}, 200, err
 }
