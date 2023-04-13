@@ -38,20 +38,32 @@ func NewRouter(app *fiber.App) {
 
 	messagingService := services.NewMessagesService(db, wsService)
 
+	/* Websocket Middlewares */
 	app.Use("/api/gateway", middlewares.NewWebsocketMiddleware())
 	app.Use("/api/gateway", middlewares.NewAuthMiddleware(authService))
+	/* End Websocket Middlewares */
+
+	/*Websocket Routes */
 	app.Get("/api/gateway", websocket.New(ChatGateway(wsService)))
+	/* End Websocket Routes */
 
+	/* Auth Middlewares */
+	app.Use("/api/auth/self", middlewares.NewAuthMiddleware(authService))
+	/* End Auth Middlewares */
+
+	/* Auth Routes */
 	app.Post("/api/auth/signin", PostSignIn(authService))
-
 	app.Post("/api/auth/signup", PostSignUp(authService, db))
+	app.Get("/api/auth/self", GetSelf())
+	/* End Auth Routes */
 
+	/* Message Middlewares */
 	app.Use("/api/message", middlewares.NewAuthMiddleware(authService))
 	app.Use("/api/messages", middlewares.NewAuthMiddleware(authService))
+	/* End Message Middlewares */
 
+	/* Message Routes */
 	app.Delete("/api/message/:id", DeleteMessage(messagingService))
 	app.Post("/api/messages", PostMessage(messagingService))
-
-	app.Use("/api/auth/self", middlewares.NewAuthMiddleware(authService))
-	app.Post("/api/auth/self", GetSelf())
+	/* End Message Routes */
 }
