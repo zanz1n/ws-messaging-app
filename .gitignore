@@ -3,6 +3,8 @@ node_modules
 *.bin
 *.out
 
+dist/
+
 # Logs
 logs
 *.log
