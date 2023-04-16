@@ -62,8 +62,8 @@ func PostSignUp(as *services.AuthService, db *dba.Queries) func(c *fiber.Ctx) er
 		}
 
 		return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-			"user": user,
-			"token":   token,
+			"user":  user,
+			"token": token,
 		})
 	}
 }

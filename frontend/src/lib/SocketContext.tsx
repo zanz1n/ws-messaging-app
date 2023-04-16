@@ -61,7 +61,6 @@ export function SocketProvider({ children }: WithChildren) {
     const ctx = useMemo(() => ({
         ws,
         close() {
-            console.log("SSSSSSS");
             ws.close();
         },
         onClose(callback) { closeCallback = callback; },

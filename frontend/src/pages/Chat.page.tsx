@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import { useAuth } from "../lib/AuthContext";
 import { useNavigate } from "react-router-dom";
-import clientConfig from "../../env-settings.json";
 import styles from "./Chat.module.css";
 import { IncomingChatMessage, useSocket } from "../lib/SocketContext";
 

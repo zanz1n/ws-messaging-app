@@ -11,7 +11,7 @@ func NewWebsocketMiddleware() func(c *fiber.Ctx) error {
 			c.Locals("allowed", true)
 			return c.Next()
 		}
-		
+
 		return c.Status(fiber.ErrUpgradeRequired.Code).JSON(fiber.Map{
 			"error": "websocket upgrade required",
 		})
