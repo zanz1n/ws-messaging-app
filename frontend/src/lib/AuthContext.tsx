@@ -56,50 +56,47 @@ export function AuthProvider({ children }: { children: React.ReactElement | Reac
     }
 
     async function login(props: LoginProps) {
-        try {
-            const resRaw = await fetch(`${clientConfig.ApiUri}/auth/signin`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(props)
-            });
+        const res = await fetch(`${clientConfig.ApiUri}/auth/signin`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(props)
+        }).catch(() => null);
 
-            const res = await resRaw.json();
+        const body = await res?.json();
 
-            if (res && typeof res == "object" && "token" in res && typeof res["token"] == "string") {
-                const uid = crypto.randomUUID();
-                localStorage.setItem("token", uid);
-                localStorage.setItem(uid, res.token);
-                return;
-            }
-        } catch (e) {
-            throw new Error("An unexpected error occurred. Check your internet connection and try again.");
+        if (!res || !res.ok || !body) {
+            throw new Error(body?.error ?? "Something went wrong");
         }
+
+        const uid = crypto.randomUUID();
+        localStorage.setItem("token", uid);
+        localStorage.setItem(uid, body.token);
+        return;
     }
 
     async function register({ username, password, confirmPassword }: RegisterProps) {
         if (password != confirmPassword) throw new Error("The passwords do not match.");
 
-        try {
-            const res = await fetch(`${clientConfig.ApiUri}/auth/signup`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ username, password })
-            });
-            const body = await res.json();
-    
-            if (body && typeof body == "object" && "token" in body && typeof body["token"] == "string") {
-                const uid = crypto.randomUUID();
-                localStorage.setItem("token", uid);
-                localStorage.setItem(uid, body.token);
-                return;
-            }
-        } catch (e) {
-            throw new Error("An unexpected error occurred. Check your internet connection and try again.");
+        const res = await fetch(`${clientConfig.ApiUri}/auth/signup`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ username, password })
+        }).catch(() => null);
+        
+        const body = await res?.json();
+
+        if (!res || !res.ok || !body) {
+            throw new Error(body?.error ?? "Something went wrong");
         }
+        
+        const uid = crypto.randomUUID();
+        localStorage.setItem("token", uid);
+        localStorage.setItem(uid, body.token);
+        return;
     }
 
     function getUserData() {
@@ -108,20 +105,11 @@ export function AuthProvider({ children }: { children: React.ReactElement | Reac
         const find = token();
         if (!find) return null;
         try {
-            const decoded = jwtDecode(find);
-            if (decoded &&
-                typeof decoded == "object" &&
-                "username" in decoded &&
-                "id" in decoded &&
-                typeof decoded["username"] == "string" &&
-                typeof decoded["id"] == "string"
-            ) {
-                return {
-                    username: decoded["username"],
-                    id: decoded["id"]
-                };
-            }
-            return null;
+            const decoded = jwtDecode(find) as { username: string, id: string };
+            return {
+                username: decoded["username"],
+                id: decoded["id"]
+            };
         } catch (e) {
             return null;
         }
