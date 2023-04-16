@@ -1,7 +1,7 @@
 version: '3.9'
 
 services:
-  redis:
+  redisdb:
     restart: always
     container_name: redisdb
     image: redis:alpine
@@ -25,6 +25,7 @@ services:
       - ws-messaging-app
 
   api:
+    restart: always
     environment:
       APP_FORK: "false"
       APP_ENV: "production"
@@ -33,6 +34,24 @@ services:
       context: .
       dockerfile: docker/api.dockerfile
     env_file: .env
+    networks:
+      - ws-messaging-app
+    depends_on:
+      - redisdb
+      - postgresql
+
+  proxy:
+    restart: always
+    container_name: proxy
+    build:
+      context: .
+      dockerfile: docker/nginx.dockerfile
+    ports:
+      - 8080:8080
+    networks:
+      - ws-messaging-app
+    depends_on:
+      - api
 
 networks:
   ws-messaging-app:

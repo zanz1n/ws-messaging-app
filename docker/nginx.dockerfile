@@ -4,9 +4,22 @@ WORKDIR /build
 
 RUN npm i -g pnpm
 
-COPY . .
+COPY ./frontend/package.json /build/frontend/
+
+COPY ./package.json ./pnpm-lock.yaml ./pnpm-workspace.yaml /build/
 
 RUN pnpm install --frozen-lockfile
+
+COPY ./frontend/index.html \
+    ./frontend/vite.config.ts \
+    ./frontend/env-settings.json \
+    ./frontend/tsconfig.json \
+    ./frontend/tsconfig.node.json \
+    /build/frontend/
+
+COPY ./frontend/public /build/frontend/public
+
+COPY ./frontend/src /build/frontend/src
 
 RUN pnpm build:client
 
