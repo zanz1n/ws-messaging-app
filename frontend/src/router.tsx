@@ -5,6 +5,7 @@ import SignUpPage from "./pages/SignUp.page";
 import ChatPage from "./pages/Chat.page";
 import { useEffect } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import { SocketProvider } from "./lib/SocketContext";
 
 function RedirectFallback() {
     const navigate = useNavigate();
@@ -24,7 +25,11 @@ function ProtectedRoute({ children }: { children: JSX.Element }) {
 
 export const router = createBrowserRouter(createRoutesFromElements(
     <Route path="/" element={<App/>}>
-        <Route path="/" element={<ProtectedRoute><ChatPage/></ProtectedRoute>}/>
+        <Route path="/" element={
+            <SocketProvider>
+                <ChatPage/>
+            </SocketProvider>
+        }/>
         <Route path="auth/signin" element={<SignInPage/>}/>
         <Route path="auth/signup" element={<SignUpPage/>}/>
     </Route>
