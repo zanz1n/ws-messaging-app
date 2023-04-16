@@ -28,6 +28,7 @@ services:
     environment:
       APP_FORK: "false"
       APP_ENV: "production"
+      REDIS_URI: "redisdb:6379"
     build:
       context: .
       dockerfile: docker/api.dockerfile
