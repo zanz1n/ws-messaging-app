@@ -65,5 +65,6 @@ func NewRouter(app *fiber.App) {
 	/* Message Routes */
 	app.Delete("/api/message/:id", DeleteMessage(messagingService))
 	app.Post("/api/messages", PostMessage(messagingService))
+	app.Get("api/messages", GetMessages(messagingService))
 	/* End Message Routes */
 }
