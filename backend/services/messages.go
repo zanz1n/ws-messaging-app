@@ -123,15 +123,21 @@ func (s *MessagesService) IsAllowed(userId string, msgId string) (bool, error) {
 	return false, nil
 }
 
-func (s *MessagesService) GetUntilTimestamp(t int64, limit int32) (*[]dba.Message, error) {
+func (s *MessagesService) GetUntilTimestamp(t int64, limit int32) (*[]MessageCreateReturnedData, error) {
 	query, err := s.db.GetMessagesWithOffset(context.Background(), dba.GetMessagesWithOffsetParams{
-		CreatedAt: time.UnixMilli(t),
-		Limit: limit,
+		ToTimestamp: float64(t),
+		Limit:     limit,
 	})
 
 	if err != nil {
 		return nil, errors.New("failed to fetch results")
 	}
 
-	return &query, nil
+	data, err := ParseMsgToSendableData(s.db, query)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }

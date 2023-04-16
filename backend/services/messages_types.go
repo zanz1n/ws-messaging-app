@@ -22,12 +22,12 @@ type UserReturnedOnMessage struct {
 }
 
 type MessageCreateReturnedData struct {
-	ID        string `json:"id"`
-	CreatedAt int64  `json:"createdAt"`
-	UpdatedAt int64  `json:"updatedAt"`
-	User      UserReturnedOnMessage
-	Image     *string `json:"image"`
-	Content   *string `json:"content"`
+	ID        string                `json:"id"`
+	CreatedAt int64                 `json:"createdAt"`
+	UpdatedAt int64                 `json:"updatedAt"`
+	User      UserReturnedOnMessage `json:"user"`
+	Image     *string               `json:"image"`
+	Content   *string               `json:"content"`
 }
 
 type MessageDeletePayload struct {
