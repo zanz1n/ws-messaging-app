@@ -23,7 +23,7 @@ SELECT * FROM "message" WHERE "userId" = $1 LIMIT $2;
 SELECT * FROM "message" WHERE "userId" = (SELECT "id" FROM "user" WHERE "username" = $1) LIMIT $2;
 
 -- name: GetMessagesWithOffset :many
-SELECT * FROM "message" WHERE "createdAt" > $1 ORDER BY "createdAt" DESC LIMIT $2;
+SELECT * FROM "message" WHERE "createdAt" < to_timestamp($1) ORDER BY "createdAt" DESC LIMIT $2;
 
 -- name: GetUserById :one
 SELECT * FROM "user" WHERE "id" = $1;

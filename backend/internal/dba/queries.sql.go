@@ -206,16 +206,16 @@ func (q *Queries) GetMessagesByUsername(ctx context.Context, arg GetMessagesByUs
 }
 
 const getMessagesWithOffset = `-- name: GetMessagesWithOffset :many
-SELECT id, "createdAt", "updatedAt", content, "imageUrl", "userId" FROM "message" WHERE "createdAt" > $1 ORDER BY "createdAt" DESC LIMIT $2
+SELECT id, "createdAt", "updatedAt", content, "imageUrl", "userId" FROM "message" WHERE "createdAt" < to_timestamp($1) ORDER BY "createdAt" DESC LIMIT $2
 `
 
 type GetMessagesWithOffsetParams struct {
-	CreatedAt time.Time
-	Limit     int32
+	ToTimestamp float64
+	Limit       int32
 }
 
 func (q *Queries) GetMessagesWithOffset(ctx context.Context, arg GetMessagesWithOffsetParams) ([]Message, error) {
-	rows, err := q.db.QueryContext(ctx, getMessagesWithOffset, arg.CreatedAt, arg.Limit)
+	rows, err := q.db.QueryContext(ctx, getMessagesWithOffset, arg.ToTimestamp, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
