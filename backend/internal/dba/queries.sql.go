@@ -8,19 +8,19 @@ package dba
 import (
 	"context"
 	"database/sql"
-	"time"
 )
 
 const createMessage = `-- name: CreateMessage :one
-INSERT INTO "message" ("id", "userId", "content", "imageUrl", "updatedAt") VALUES ($1, $2, $3, $4, $5) RETURNING id, "createdAt", "updatedAt", content, "imageUrl", "userId"
+INSERT INTO "message" ("id", "userId", "content", "imageUrl", "updatedAt", "createdAt") VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, "createdAt", "updatedAt", content, "imageUrl", "userId"
 `
 
 type CreateMessageParams struct {
-	ID        string
-	UserId    string
-	Content   sql.NullString
-	ImageUrl  sql.NullString
-	UpdatedAt time.Time
+	ID        string         `json:"id"`
+	UserId    string         `json:"userId"`
+	Content   sql.NullString `json:"content"`
+	ImageUrl  sql.NullString `json:"imageUrl"`
+	UpdatedAt int64          `json:"updatedAt"`
+	CreatedAt int64          `json:"createdAt"`
 }
 
 func (q *Queries) CreateMessage(ctx context.Context, arg CreateMessageParams) (Message, error) {
@@ -30,6 +30,7 @@ func (q *Queries) CreateMessage(ctx context.Context, arg CreateMessageParams) (M
 		arg.Content,
 		arg.ImageUrl,
 		arg.UpdatedAt,
+		arg.CreatedAt,
 	)
 	var i Message
 	err := row.Scan(
@@ -44,15 +45,16 @@ func (q *Queries) CreateMessage(ctx context.Context, arg CreateMessageParams) (M
 }
 
 const createUser = `-- name: CreateUser :exec
-INSERT INTO "user" ("id", "username", "password", "updatedAt", "role") VALUES ($1, $2, $3, $4, $5)
+INSERT INTO "user" ("id", "username", "password", "role", "updatedAt", "createdAt") VALUES ($1, $2, $3, $4, $5, $6)
 `
 
 type CreateUserParams struct {
-	ID        string
-	Username  string
-	Password  string
-	UpdatedAt time.Time
-	Role      UserRole
+	ID        string   `json:"id"`
+	Username  string   `json:"username"`
+	Password  string   `json:"password"`
+	Role      UserRole `json:"role"`
+	UpdatedAt int64    `json:"updatedAt"`
+	CreatedAt int64    `json:"createdAt"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
@@ -60,8 +62,9 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 		arg.ID,
 		arg.Username,
 		arg.Password,
-		arg.UpdatedAt,
 		arg.Role,
+		arg.UpdatedAt,
+		arg.CreatedAt,
 	)
 	return err
 }
@@ -85,7 +88,7 @@ func (q *Queries) GetAllMessages(ctx context.Context, limit int32) ([]Message, e
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Message
+	items := []Message{}
 	for rows.Next() {
 		var i Message
 		if err := rows.Scan(
@@ -132,8 +135,8 @@ SELECT id, "createdAt", "updatedAt", content, "imageUrl", "userId" FROM "message
 `
 
 type GetMessagesByUserIdParams struct {
-	UserId string
-	Limit  int32
+	UserId string `json:"userId"`
+	Limit  int32  `json:"limit"`
 }
 
 func (q *Queries) GetMessagesByUserId(ctx context.Context, arg GetMessagesByUserIdParams) ([]Message, error) {
@@ -142,7 +145,7 @@ func (q *Queries) GetMessagesByUserId(ctx context.Context, arg GetMessagesByUser
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Message
+	items := []Message{}
 	for rows.Next() {
 		var i Message
 		if err := rows.Scan(
@@ -171,8 +174,8 @@ SELECT id, "createdAt", "updatedAt", content, "imageUrl", "userId" FROM "message
 `
 
 type GetMessagesByUsernameParams struct {
-	Username string
-	Limit    int32
+	Username string `json:"username"`
+	Limit    int32  `json:"limit"`
 }
 
 func (q *Queries) GetMessagesByUsername(ctx context.Context, arg GetMessagesByUsernameParams) ([]Message, error) {
@@ -181,7 +184,7 @@ func (q *Queries) GetMessagesByUsername(ctx context.Context, arg GetMessagesByUs
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Message
+	items := []Message{}
 	for rows.Next() {
 		var i Message
 		if err := rows.Scan(
@@ -206,21 +209,21 @@ func (q *Queries) GetMessagesByUsername(ctx context.Context, arg GetMessagesByUs
 }
 
 const getMessagesWithOffset = `-- name: GetMessagesWithOffset :many
-SELECT id, "createdAt", "updatedAt", content, "imageUrl", "userId" FROM "message" WHERE "createdAt" < to_timestamp($1) ORDER BY "createdAt" DESC LIMIT $2
+SELECT id, "createdAt", "updatedAt", content, "imageUrl", "userId" FROM "message" WHERE "createdAt" < $1 ORDER BY "createdAt" DESC LIMIT $2
 `
 
 type GetMessagesWithOffsetParams struct {
-	ToTimestamp float64
-	Limit       int32
+	CreatedAt int64 `json:"createdAt"`
+	Limit     int32 `json:"limit"`
 }
 
 func (q *Queries) GetMessagesWithOffset(ctx context.Context, arg GetMessagesWithOffsetParams) ([]Message, error) {
-	rows, err := q.db.QueryContext(ctx, getMessagesWithOffset, arg.ToTimestamp, arg.Limit)
+	rows, err := q.db.QueryContext(ctx, getMessagesWithOffset, arg.CreatedAt, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Message
+	items := []Message{}
 	for rows.Next() {
 		var i Message
 		if err := rows.Scan(

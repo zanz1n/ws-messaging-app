@@ -34,10 +34,13 @@ func PostSignUp(as *services.AuthService, db *dba.Queries) func(c *fiber.Ctx) er
 			})
 		}
 
+		now := time.Now().UnixMilli()
+
 		err := db.CreateUser(ctx, dba.CreateUserParams{
 			Username:  body.Username,
 			Password:  as.GenerateHash(body.Password),
-			UpdatedAt: time.Now(),
+			CreatedAt: now,
+			UpdatedAt: now,
 			Role:      "USER",
 			ID:        utils.RandomId(),
 		})

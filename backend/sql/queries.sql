@@ -1,5 +1,5 @@
 -- name: CreateUser :exec
-INSERT INTO "user" ("id", "username", "password", "updatedAt", "role") VALUES ($1, $2, $3, $4, $5);
+INSERT INTO "user" ("id", "username", "password", "role", "updatedAt", "createdAt") VALUES ($1, $2, $3, $4, $5, $6);
 
 -- name: GetUserByUsername :one
 SELECT * FROM "user" WHERE "username" = $1;
@@ -14,7 +14,7 @@ SELECT * FROM "message" WHERE "id" = $1;
 DELETE FROM "message" WHERE "id" = $1;
 
 -- name: CreateMessage :one
-INSERT INTO "message" ("id", "userId", "content", "imageUrl", "updatedAt") VALUES ($1, $2, $3, $4, $5) RETURNING *;
+INSERT INTO "message" ("id", "userId", "content", "imageUrl", "updatedAt", "createdAt") VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
 
 -- name: GetMessagesByUserId :many
 SELECT * FROM "message" WHERE "userId" = $1 LIMIT $2;
@@ -23,7 +23,7 @@ SELECT * FROM "message" WHERE "userId" = $1 LIMIT $2;
 SELECT * FROM "message" WHERE "userId" = (SELECT "id" FROM "user" WHERE "username" = $1) LIMIT $2;
 
 -- name: GetMessagesWithOffset :many
-SELECT * FROM "message" WHERE "createdAt" < to_timestamp($1) ORDER BY "createdAt" DESC LIMIT $2;
+SELECT * FROM "message" WHERE "createdAt" < $1 ORDER BY "createdAt" DESC LIMIT $2;
 
 -- name: GetUserById :one
 SELECT * FROM "user" WHERE "id" = $1;

@@ -2,8 +2,8 @@ CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'USER');
 
 CREATE TABLE "user" (
     "id" VARCHAR(18) NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" BIGINT NOT NULL,
+    "updatedAt" BIGINT NOT NULL,
     "role" "UserRole" NOT NULL DEFAULT 'USER',
     "username" VARCHAR(255) NOT NULL,
     "password" VARCHAR(255) NOT NULL,
@@ -13,8 +13,8 @@ CREATE TABLE "user" (
 
 CREATE TABLE "message" (
     "id" VARCHAR(18) NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" BIGINT NOT NULL,
+    "updatedAt" BIGINT NOT NULL,
     "content" TEXT,
     "imageUrl" TEXT,
     "userId" VARCHAR(36) NOT NULL,

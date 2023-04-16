@@ -37,8 +37,8 @@ func ParseMsgToSendableData(db *dba.Queries, query []dba.Message) (*[]MessageCre
 
 		data = MessageCreateReturnedData{
 			ID:        message.ID,
-			CreatedAt: message.CreatedAt.UnixMilli(),
-			UpdatedAt: message.CreatedAt.UnixMilli(),
+			CreatedAt: message.CreatedAt,
+			UpdatedAt: message.CreatedAt,
 			User: UserReturnedOnMessage{
 				ID:       message.UserId,
 				Username: userName,

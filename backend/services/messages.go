@@ -29,10 +29,13 @@ func (s *MessagesService) Publish(data *CreateMessageDto) (*MessageCreateReturne
 		return nil, 400, errors.New("content and image can't be empty at the same time")
 	}
 
+	now := time.Now().UnixMilli()
+
 	message := dba.CreateMessageParams{
 		ID:        utils.RandomId(),
 		UserId:    data.User.ID,
-		UpdatedAt: time.Now(),
+		UpdatedAt: now,
+		CreatedAt: now,
 	}
 
 	broadcast := MessageCreatePayload{
@@ -64,8 +67,8 @@ func (s *MessagesService) Publish(data *CreateMessageDto) (*MessageCreateReturne
 		return nil, 500, errors.New("message creation failed, try again later")
 	}
 
-	broadcast.CreatedAt = result.CreatedAt.UnixMilli()
-	broadcast.UpdatedAt = result.UpdatedAt.UnixMilli()
+	broadcast.CreatedAt = result.CreatedAt
+	broadcast.UpdatedAt = result.UpdatedAt
 
 	payload, err := json.Marshal(&broadcast)
 
@@ -77,8 +80,8 @@ func (s *MessagesService) Publish(data *CreateMessageDto) (*MessageCreateReturne
 
 	return &MessageCreateReturnedData{
 		ID:        result.ID,
-		CreatedAt: result.CreatedAt.UnixMilli(),
-		UpdatedAt: result.CreatedAt.UnixMilli(),
+		CreatedAt: result.CreatedAt,
+		UpdatedAt: result.CreatedAt,
 		User: UserReturnedOnMessage{
 			ID:       data.User.ID,
 			Username: data.User.Username,
@@ -125,7 +128,7 @@ func (s *MessagesService) IsAllowed(userId string, msgId string) (bool, error) {
 
 func (s *MessagesService) GetUntilTimestamp(t int64, limit int32) (*[]MessageCreateReturnedData, error) {
 	query, err := s.db.GetMessagesWithOffset(context.Background(), dba.GetMessagesWithOffsetParams{
-		ToTimestamp: float64(t),
+		CreatedAt: t,
 		Limit:     limit,
 	})
 

@@ -8,7 +8,6 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"fmt"
-	"time"
 )
 
 type UserRole string
@@ -54,19 +53,19 @@ func (ns NullUserRole) Value() (driver.Value, error) {
 }
 
 type Message struct {
-	ID        string
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Content   sql.NullString
-	ImageUrl  sql.NullString
-	UserId    string
+	ID        string         `json:"id"`
+	CreatedAt int64          `json:"createdAt"`
+	UpdatedAt int64          `json:"updatedAt"`
+	Content   sql.NullString `json:"content"`
+	ImageUrl  sql.NullString `json:"imageUrl"`
+	UserId    string         `json:"userId"`
 }
 
 type User struct {
-	ID        string
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Role      UserRole
-	Username  string
-	Password  string
+	ID        string   `json:"id"`
+	CreatedAt int64    `json:"createdAt"`
+	UpdatedAt int64    `json:"updatedAt"`
+	Role      UserRole `json:"role"`
+	Username  string   `json:"username"`
+	Password  string   `json:"password"`
 }
