@@ -40,11 +40,10 @@ func NewRouter(app *fiber.App) {
 
 	/* Websocket Middlewares */
 	app.Use("/api/gateway", middlewares.NewWebsocketMiddleware())
-	app.Use("/api/gateway", middlewares.NewAuthMiddleware(authService))
 	/* End Websocket Middlewares */
 
 	/*Websocket Routes */
-	app.Get("/api/gateway", websocket.New(ChatGateway(wsService)))
+	app.Get("/api/gateway", websocket.New(ChatGateway(wsService, authService)))
 	/* End Websocket Routes */
 
 	/* Auth Middlewares */

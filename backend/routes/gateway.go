@@ -15,12 +15,29 @@ const (
 	hbInterval uint = 32
 )
 
-func ChatGateway(s *services.WebsocketService) func(c *websocket.Conn) {
+func ChatGateway(s *services.WebsocketService, ap *services.AuthService) func(c *websocket.Conn) {
 	return func(c *websocket.Conn) {
+		defer c.Close()
+
+		authToken := c.Query("auth_token")
+
+		if authToken == "" {
+			c.WriteJSON(fiber.Map{
+				"error": "'auth_token' query param is required",
+			})
+			return
+		}
+
+		if _, err := ap.ValidateJwtToken(authToken); err != nil {
+			c.WriteJSON(fiber.Map{
+				"error": err.Error(),
+			})
+			return
+		}
+
 		connId := s.AddConn(c)
 
 		defer s.RemoveConn(connId)
-		defer c.Close()
 
 		if hostname, err := os.Hostname(); err == nil {
 			c.WriteJSON(fiber.Map{
