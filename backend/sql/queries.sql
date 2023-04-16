@@ -24,3 +24,6 @@ SELECT * FROM "message" WHERE "userId" = (SELECT "id" FROM "user" WHERE "usernam
 
 -- name: GetMessagesWithOffset :many
 SELECT * FROM "message" WHERE "createdAt" > $1 ORDER BY "createdAt" DESC LIMIT $2;
+
+-- name: GetUserById :one
+SELECT * FROM "user" WHERE "id" = $1;

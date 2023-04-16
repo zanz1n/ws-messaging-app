@@ -244,6 +244,24 @@ func (q *Queries) GetMessagesWithOffset(ctx context.Context, arg GetMessagesWith
 	return items, nil
 }
 
+const getUserById = `-- name: GetUserById :one
+SELECT id, "createdAt", "updatedAt", role, username, password FROM "user" WHERE "id" = $1
+`
+
+func (q *Queries) GetUserById(ctx context.Context, id string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserById, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Role,
+		&i.Username,
+		&i.Password,
+	)
+	return i, err
+}
+
 const getUserByUsername = `-- name: GetUserByUsername :one
 SELECT id, "createdAt", "updatedAt", role, username, password FROM "user" WHERE "username" = $1
 `
