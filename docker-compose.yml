@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  redis:
+    restart: always
+    container_name: redisdb
+    image: redis:alpine
+    command: redis-server --save 60 1 --loglevel warning --requirepass "${REDIS_PASSWORD}"
+    networks:
+      - ws-messaging-app
+    env_file:
+      - .env
+    volumes:
+      - ./.docker-volumes/redis_volume:/data
+
+  postgresql:
+    restart: always
+    container_name: postgresql
+    image: postgres:alpine
+    volumes:
+      - ./.docker-volumes/postgres_volume:/var/lib/postgresql/data
+    env_file:
+      - .env
+    networks:
+      - ws-messaging-app
+
+  api:
+    environment:
+      APP_FORK: "false"
+      APP_ENV: "production"
+    build:
+      context: .
+      dockerfile: docker/api.dockerfile
+    env_file: .env
+
+networks:
+  ws-messaging-app:
+    driver: bridge
