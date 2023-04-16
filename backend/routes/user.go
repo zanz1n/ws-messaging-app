@@ -50,8 +50,16 @@ func PostSignUp(as *services.AuthService, db *dba.Queries) func(c *fiber.Ctx) er
 
 		token, _ := as.AuthenticateUser(body.Username, body.Password)
 
+		user, err := as.ValidateJwtToken(token)
+
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "something went wrong",
+			})
+		}
+
 		return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-			"message": "user created",
+			"user": user,
 			"token":   token,
 		})
 	}
