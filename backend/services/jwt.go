@@ -9,8 +9,8 @@ import (
 )
 
 type UserJwtPayload struct {
-	ID       string
-	Username string
+	ID       string `json:"id"`
+	Username string `json:"username"`
 }
 
 type JwtService struct {
