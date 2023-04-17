@@ -1,19 +1,10 @@
 import { createContext, useContext, useMemo } from "react";
-import { WithChildren } from "./types";
+import { BaseMessage, WithChildren } from "./types";
 import { useAuth } from "./AuthContext";
 import clientConfig from "../../env-settings.json";
 
-export interface IncomingChatMessage {
+export interface IncomingChatMessage extends BaseMessage {
     type: "messageCreated";
-    id: string
-    createdAt: number
-    updatedAt: number
-    user: {
-        id: string;
-        username: string;
-    }
-    image: string | null
-    content: string | null
 }
 
 export interface IncomingError {
