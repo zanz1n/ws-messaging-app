@@ -18,16 +18,16 @@ jobs:
 
       - name: "Build Linux"
         continue-on-error: true
-        run: 'GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o dist/linux-amd64 .'
+        run: 'GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o dist/linux-amd64 ./backend/main.go'
 
       - name: "Build Freebsd"
         continue-on-error: true
-        run: 'GOOS=freebsd GOARCH=amd64 go build -ldflags "-s -w" -o dist/freebsd-amd64 .'
+        run: 'GOOS=freebsd GOARCH=amd64 go build -ldflags "-s -w" -o dist/freebsd-amd64 ./backend/main.go'
 
       - name: "Build Darwin"
         continue-on-error: true
-        run: 'GOOS=darwin GOARCH=amd64 go build -ldflags "-s -w" -o dist/darwin-amd64 .'
+        run: 'GOOS=darwin GOARCH=amd64 go build -ldflags "-s -w" -o dist/darwin-amd64 ./backend/main.go'
 
       - name: "Build Windows"
         continue-on-error: true
-        run: 'GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o dist/windows-amd64.exe .'
+        run: 'GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o dist/windows-amd64.exe ./backend/main.go'
