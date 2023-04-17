@@ -24,7 +24,7 @@ jobs:
 
       - name: Install Dependencies
         working-directory: backend
-        run: go get ./backend
+        run: go get .
 
       - name: "Build Linux"
         run: go build -ldflags "-s -w" -o dist/build.bin ./backend/main.go
