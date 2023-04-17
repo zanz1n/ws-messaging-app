@@ -18,12 +18,14 @@ func ParseMsgToSendableData(db *dba.Queries, query []dba.Message) (*[]MessageCre
 		userResult dba.User
 		userName   string
 		i          int
+		iO         = 0
 		message    dba.Message
 		data       MessageCreateReturnedData
 		err        error
 	)
 
-	for i, message = range query {
+	for i = len(query) - 1; i >= 0; i-- {
+		message = query[i]
 		if _, ok = userMap[message.UserId]; !ok {
 			userResult, err = db.GetUserById(ctx, message.UserId)
 
@@ -55,7 +57,8 @@ func ParseMsgToSendableData(db *dba.Queries, query []dba.Message) (*[]MessageCre
 			data.Image = &imageUrl
 		}
 
-		finalData[i] = data
+		finalData[iO] = data
+		iO++
 	}
 
 	return &finalData, nil
