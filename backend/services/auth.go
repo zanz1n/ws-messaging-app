@@ -5,7 +5,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/zanz1n/ws-messaging-app/internal/dba"
+	"github.com/zanz1n/ws-messaging-app/dba"
 	"golang.org/x/crypto/bcrypt"
 )
 

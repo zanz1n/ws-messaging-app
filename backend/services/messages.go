@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/goccy/go-json"
-	"github.com/zanz1n/ws-messaging-app/internal/dba"
+	"github.com/zanz1n/ws-messaging-app/dba"
 	"github.com/zanz1n/ws-messaging-app/utils"
 )
 

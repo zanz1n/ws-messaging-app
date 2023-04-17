@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/zanz1n/ws-messaging-app/internal/dba"
+	"github.com/zanz1n/ws-messaging-app/dba"
 )
 
 func ParseMsgToSendableData(db *dba.Queries, query []dba.Message) (*[]MessageCreateReturnedData, error) {

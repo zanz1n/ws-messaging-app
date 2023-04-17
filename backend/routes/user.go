@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/zanz1n/ws-messaging-app/internal/dba"
+	"github.com/zanz1n/ws-messaging-app/dba"
 	"github.com/zanz1n/ws-messaging-app/services"
 	"github.com/zanz1n/ws-messaging-app/utils"
 )
