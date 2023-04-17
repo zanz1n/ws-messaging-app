@@ -6,28 +6,41 @@ on:
       - "main"
 
 jobs:
-  build:
+  go:
+    runs-on: ubuntu-latest
+
+    env:
+      GOOS: linux
+      GOARCH: amd64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.20.3
+
+      - name: Install Dependencies
+        run: go get .
+
+      - name: "Build Linux"
+        run: go build -ldflags "-s -w" -o dist/build.bin ./backend/main.go
+
+  node:
     runs-on: ubuntu-latest
 
     steps:
-      - name: "Checkout"
+      - name: Checkout
         uses: actions/checkout@v3
 
-      - name: "Setup go"
-        uses: actions/setup-go@v3
+      - name: Setup NodeJs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - run: npm i -g pnpm
+      - run: pnpm install --frozen-lockfile
 
-      - name: "Build Linux"
-        continue-on-error: true
-        run: 'GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o dist/linux-amd64 ./backend/main.go'
-
-      - name: "Build Freebsd"
-        continue-on-error: true
-        run: 'GOOS=freebsd GOARCH=amd64 go build -ldflags "-s -w" -o dist/freebsd-amd64 ./backend/main.go'
-
-      - name: "Build Darwin"
-        continue-on-error: true
-        run: 'GOOS=darwin GOARCH=amd64 go build -ldflags "-s -w" -o dist/darwin-amd64 ./backend/main.go'
-
-      - name: "Build Windows"
-        continue-on-error: true
-        run: 'GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o dist/windows-amd64.exe ./backend/main.go'
+      - name: Build Frontend
+        run: pnpm build:client
