@@ -46,11 +46,13 @@ func ParseMsgToSendableData(db *dba.Queries, query []dba.Message) (*[]MessageCre
 		}
 
 		if message.Content.Valid {
-			data.Content = &message.Content.String
+			content := message.Content.String
+			data.Content = &content
 		}
 
 		if message.ImageUrl.Valid {
-			data.Image = &message.ImageUrl.String
+			imageUrl := message.ImageUrl.String
+			data.Image = &imageUrl
 		}
 
 		finalData[i] = data
