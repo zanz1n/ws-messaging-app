@@ -1,0 +1,33 @@
+name: "Build"
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3
+
+      - name: "Setup go"
+        uses: actions/setup-go@v3
+
+      - name: "Build Linux"
+        continue-on-error: true
+        run: 'GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o dist/linux-amd64 .'
+
+      - name: "Build Freebsd"
+        continue-on-error: true
+        run: 'GOOS=freebsd GOARCH=amd64 go build -ldflags "-s -w" -o dist/freebsd-amd64 .'
+
+      - name: "Build Darwin"
+        continue-on-error: true
+        run: 'GOOS=darwin GOARCH=amd64 go build -ldflags "-s -w" -o dist/darwin-amd64 .'
+
+      - name: "Build Windows"
+        continue-on-error: true
+        run: 'GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o dist/windows-amd64.exe .'
