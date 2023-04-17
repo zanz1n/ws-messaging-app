@@ -3,7 +3,9 @@ import Header from "../components/Header";
 import { useAuth } from "../lib/AuthContext";
 import { useNavigate } from "react-router-dom";
 import styles from "./Chat.module.css";
-import { IncomingChatMessage, useSocket } from "../lib/SocketContext";
+import { useSocket } from "../lib/SocketContext";
+import clientConfig from "../../env-settings.json";
+import { BaseMessage } from "../lib/types";
 
 export interface ChatMessagePayload {
     content: string | null;
@@ -16,27 +18,55 @@ export default function ChatPage() {
 
     const navigate = useNavigate();
 
-    const [messages, setMessages] = useState<IncomingChatMessage[]>([]);
+    const [messages, setMessages] = useState<BaseMessage[]>([]);
 
     useEffect(() => {
+        console.log("AAAAAA");
         if (!isAuthenticated || !token) {
             close();
             navigate("/auth/signin");
             return;
         }
+
+        fetch(`${clientConfig.ApiUri}/messages?t=16816144697510&l=100`, {
+            headers: {
+                authorization: token
+            }
+        }).then(res => {
+            if (!res.ok) throw new Error("failed to fetch messages");
+
+            return res.json();
+        }).then((data: unknown) => {
+            if (data && typeof data == "object" && "data" in data && typeof data["data"] == "object") {
+                const msgs = data["data"] as BaseMessage[];
+
+                setMessages([ ...messages, ...msgs ]);
+                return;
+            }
+            throw new Error("received incomplete or corrupted data from the server");
+        }).catch((e => console.error(e)));
     }, []);
 
-    onMessage((message) => {
-        console.log(message);
+    onMessage((message: BaseMessage) => {
+        if ("type" in message) {
+            delete message["type"];
+        }
         setMessages([ ...messages, message]);
     });
     
     return <>
-        {console.log(messages)}
         <Header/>
         <main className={styles.main}>
             {messages.map((m) => {
-                return JSON.stringify(m);
+                const date = new Date(m.createdAt);
+                const timeString = `${date.getHours()}:${date.getMinutes()}:` + 
+                (date.getSeconds() > 10 ? date.getSeconds() : `0${date.getSeconds()}`);
+                return <div>
+                    <h2>{m.user.username}</h2>
+                    <p>{date.toDateString() + " " + timeString}</p>
+                    {m.content ? <p>{m.content}</p> : undefined}
+                    {m.image ? <img src={m.image} alt={m.image}/> : undefined}
+                </div>;
             })}
         </main>
     </>;
