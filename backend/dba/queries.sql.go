@@ -260,6 +260,31 @@ func (q *Queries) GetUserById(ctx context.Context, id string) (User, error) {
 	return i, err
 }
 
+const getUserByIdSafe = `-- name: GetUserByIdSafe :one
+SELECT "id", "createdAt", "updatedAt", "role", "username" FROM "user" WHERE "id" = $1
+`
+
+type GetUserByIdSafeRow struct {
+	ID        string   `json:"id"`
+	CreatedAt int64    `json:"createdAt"`
+	UpdatedAt int64    `json:"updatedAt"`
+	Role      UserRole `json:"role"`
+	Username  string   `json:"username"`
+}
+
+func (q *Queries) GetUserByIdSafe(ctx context.Context, id string) (GetUserByIdSafeRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserByIdSafe, id)
+	var i GetUserByIdSafeRow
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Role,
+		&i.Username,
+	)
+	return i, err
+}
+
 const getUserByUsername = `-- name: GetUserByUsername :one
 SELECT id, "createdAt", "updatedAt", role, username, password FROM "user" WHERE "username" = $1
 `
@@ -274,6 +299,31 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User,
 		&i.Role,
 		&i.Username,
 		&i.Password,
+	)
+	return i, err
+}
+
+const getUserByUsernameSafe = `-- name: GetUserByUsernameSafe :one
+SELECT "id", "createdAt", "updatedAt", "role", "username" FROM "user" WHERE "id" = $1
+`
+
+type GetUserByUsernameSafeRow struct {
+	ID        string   `json:"id"`
+	CreatedAt int64    `json:"createdAt"`
+	UpdatedAt int64    `json:"updatedAt"`
+	Role      UserRole `json:"role"`
+	Username  string   `json:"username"`
+}
+
+func (q *Queries) GetUserByUsernameSafe(ctx context.Context, id string) (GetUserByUsernameSafeRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserByUsernameSafe, id)
+	var i GetUserByUsernameSafeRow
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Role,
+		&i.Username,
 	)
 	return i, err
 }

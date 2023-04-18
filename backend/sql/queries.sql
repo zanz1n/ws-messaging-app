@@ -4,6 +4,9 @@ INSERT INTO "user" ("id", "username", "password", "role", "updatedAt", "createdA
 -- name: GetUserByUsername :one
 SELECT * FROM "user" WHERE "username" = $1;
 
+-- name: GetUserByUsernameSafe :one
+SELECT "id", "createdAt", "updatedAt", "role", "username" FROM "user" WHERE "id" = $1;
+
 -- name: GetAllMessages :many
 SELECT * FROM "message" LIMIT $1;
 
@@ -27,3 +30,6 @@ SELECT * FROM "message" WHERE "createdAt" < $1 ORDER BY "createdAt" DESC LIMIT $
 
 -- name: GetUserById :one
 SELECT * FROM "user" WHERE "id" = $1;
+
+-- name: GetUserByIdSafe :one
+SELECT "id", "createdAt", "updatedAt", "role", "username" FROM "user" WHERE "id" = $1;
