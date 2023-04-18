@@ -42,7 +42,7 @@ func NewRouter(app *fiber.App) {
 	app.Use("/api/gateway", middlewares.NewWebsocketMiddleware())
 	/* End Websocket Middlewares */
 
-	/*Websocket Routes */
+	/* Websocket Routes */
 	app.Get("/api/gateway", websocket.New(ChatGateway(wsService, authService)))
 	/* End Websocket Routes */
 
@@ -66,4 +66,8 @@ func NewRouter(app *fiber.App) {
 	app.Post("/api/messages", PostMessage(messagingService))
 	app.Get("api/messages", GetMessages(messagingService))
 	/* End Message Routes */
+
+	/* User Routes */
+	app.Get("/api/user/:id", GetUserById(db))
+	/* End User Routes */
 }
