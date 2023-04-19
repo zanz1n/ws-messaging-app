@@ -6,6 +6,7 @@ import styles from "./Chat.module.css";
 import { useSocket } from "../lib/SocketContext";
 import clientConfig from "../../env-settings.json";
 import { BaseMessage } from "../lib/types";
+import Message from "../components/Message";
 
 export interface ChatMessagePayload {
     content: string | null;
@@ -13,7 +14,7 @@ export interface ChatMessagePayload {
 }
 
 export default function ChatPage() {
-    const { isAuthenticated, token } = useAuth();
+    const { isAuthenticated, token, userData } = useAuth();
     const { onMessage, close } = useSocket();
 
     const navigate = useNavigate();
@@ -21,7 +22,6 @@ export default function ChatPage() {
     const [messages, setMessages] = useState<BaseMessage[]>([]);
 
     useEffect(() => {
-        console.log("AAAAAA");
         if (!isAuthenticated || !token) {
             close();
             navigate("/auth/signin");
@@ -57,17 +57,26 @@ export default function ChatPage() {
     return <>
         <Header/>
         <main className={styles.main}>
-            {messages.map((m) => {
-                const date = new Date(m.createdAt);
-                const timeString = `${date.getHours()}:${date.getMinutes()}:` + 
+            <div className={styles.chatContainer}>
+                <div className={styles.messagesContainer}>
+                    <div className={styles.messages}>
+                        {messages.map((m) => {
+                            const date = new Date(m.createdAt);
+                            const timeString = `${date.getHours()}:${date.getMinutes()}:` + 
                 (date.getSeconds() > 10 ? date.getSeconds() : `0${date.getSeconds()}`);
-                return <div>
-                    <h2>{m.user.username}</h2>
-                    <p>{date.toDateString() + " " + timeString}</p>
-                    {m.content ? <p>{m.content}</p> : undefined}
-                    {m.image ? <img src={m.image} alt={m.image}/> : undefined}
-                </div>;
-            })}
+                            return <Message
+                                content={m.content} 
+                                image={m.image}
+                                self={userData?.id == m.user.id}
+                                timeFmt={timeString}
+                                userId={m.user.id}
+                                username={m.user.username}
+                                key={m.id}
+                            />;
+                        })}
+                    </div>
+                </div>
+            </div>
         </main>
     </>;
 }

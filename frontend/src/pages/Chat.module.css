@@ -1,4 +1,29 @@
 .main {
     background-color: #1c1522;
     min-height: calc(100vh - 70px);
+    display: grid;
+    place-items: center;
+}
+
+.messagesContainer {
+    width: 900px;
+    height: 76vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background);
+}
+
+.chatContainer {
+    background-color: var(--background);
+    overflow-y: auto;
+}
+
+.messages {
+    margin: 32px;
+}
+
+@media screen and (max-width: 920px) {
+    .messagesContainer {
+        width: 96vw;
+    }
 }

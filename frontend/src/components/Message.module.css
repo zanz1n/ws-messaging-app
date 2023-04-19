@@ -1,0 +1,9 @@
+.message {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.body {
+    margin: 16px;
+}
