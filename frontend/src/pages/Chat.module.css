@@ -35,7 +35,7 @@
 .messagesContainer {
     border-radius: 8px;
     overflow-y: auto;
-    height: 92%;
+    height: calc(77vh - 62px);
     display: flex;
     flex-direction: column-reverse;
     background-color: var(--background);
@@ -49,7 +49,58 @@
 }
 
 .form {
-    margin-top: 4px;
+    margin-top: 2px;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    margin: 0 8px;
+}
+
+.formInput {
+    width: calc(100%);
+}
+
+.formInput input {
+    width: 100%;
+    height: 42px;
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    margin-top: 10px;
+    margin-bottom: 16px;
+    font-size: 1rem;
+    background-color: var(--current-line);
+    color: var(--foreground);
+    box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.226);
+}
+
+.form button {
+    width: 96px;
+    height: 42px;
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    margin-top: 10px;
+    margin-bottom: 16px;
+    font-size: 1rem;
+    background-color: var(--green);
+    color: var(--background);
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.226);
+}
+
+.form button:hover {
+    background-color: var(--green-hover);
+}
+
+.form button:disabled {
+    background-color: var(--green-disabled);
+    cursor: not-allowed;
+}
+
+.formInput input:focus {
+    outline: 2px solid var(--cyan);
 }
 
 @media screen and (max-width: 920px) {

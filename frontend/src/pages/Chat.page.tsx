@@ -76,9 +76,12 @@ export default function ChatPage() {
                         })}
                     </div>
                 </div>
-                <div className={styles.form}>
-                    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-                </div>
+                <form className={styles.form}>
+                    <div className={styles.formInput}>
+                        <input type="text" />
+                    </div>
+                    <button>Enviar</button>
+                </form>
             </div>
         </main>
     </>;
