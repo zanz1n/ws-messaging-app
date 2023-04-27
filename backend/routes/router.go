@@ -13,14 +13,18 @@ import (
 var validate = validator.New()
 
 func NewRouter(app *fiber.App) {
-	if services.ConfigProvider().AppEnv == "development" {
-		app.Static("/", "./frontend/dist", fiber.Static{
-			ByteRange:     true,
-			Index:         "index.html",
-			Compress:      true,
-			MaxAge:        16,
-			CacheDuration: 16 * time.Second,
-		})
+	if services.ConfigProvider().SelfContained {
+		frontendRoutes := []string{"/", "/auth/signup", "/auth/signin"}
+
+		for _, route := range frontendRoutes {
+			app.Static(route, "./static", fiber.Static{
+				ByteRange:     true,
+				Index:         "index.html",
+				Compress:      true,
+				MaxAge:        30,
+				CacheDuration: 32 * time.Second,
+			})
+		}
 	}
 
 	db, conn := services.NewDbProvider()

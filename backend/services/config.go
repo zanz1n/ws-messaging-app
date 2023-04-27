@@ -19,6 +19,7 @@ type Configs struct {
 	RedisDb       int
 	JwtSecret     string
 	BcryptSalt    int
+	SelfContained bool
 }
 
 var (
@@ -86,6 +87,12 @@ func GenerateConfigsFromEnv() {
 		instance.UseTls = true
 	} else {
 		instance.UseTls = false
+	}
+
+	if os.Getenv("APP_SELF_CONTAINED") == "true" {
+		instance.SelfContained = true
+	} else {
+		instance.SelfContained = false
 	}
 }
 

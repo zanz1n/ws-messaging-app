@@ -30,10 +30,10 @@ services:
       APP_FORK: "false"
       APP_ENV: "production"
       REDIS_URI: "redisdb:6379"
-      APP_SELF_CONTAINED: "true"
+      APP_SELF_CONTAINED: "false"
     build:
       context: .
-      dockerfile: docker/self-contained/api.dockerfile
+      dockerfile: docker/nginx-static-setup/api.dockerfile
     env_file: .env
     networks:
       - ws-messaging-app
@@ -46,7 +46,7 @@ services:
     container_name: proxy
     build:
       context: .
-      dockerfile: docker/self-contained/nginx.dockerfile
+      dockerfile: docker/nginx-static-setup/nginx.dockerfile
     ports:
       - 8080:8080
     networks:

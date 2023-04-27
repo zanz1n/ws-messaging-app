@@ -27,7 +27,7 @@ FROM nginx:alpine
 
 RUN rm /etc/nginx/conf.d/default.conf
 
-COPY ./docker/nginx.conf /etc/nginx/conf.d/webapp.conf
+COPY ./docker/nginx-static-setup/nginx.conf /etc/nginx/conf.d/webapp.conf
 
 COPY --from=node_builder /build/frontend/dist /var/www/www-root
 
