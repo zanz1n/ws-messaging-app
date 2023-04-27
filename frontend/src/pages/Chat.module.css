@@ -104,9 +104,18 @@
 }
 
 @media screen and (max-width: 920px) {
-
-    .chatContainer,
-    .messagesContainer {
+    .chatContainer {
         width: 96vw;
+    }
+}
+
+@media screen and (max-width: 720px) {
+    .chatContainer {
+        width: 96vw;
+        height: 85vh;
+    }
+
+    .messagesContainer {
+        height: calc(85vh - 62px);
     }
 }

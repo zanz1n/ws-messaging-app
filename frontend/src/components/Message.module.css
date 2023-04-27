@@ -30,3 +30,9 @@
 .body {
     margin: 16px;
 }
+
+@media screen and (max-width: 620px) {
+    .message {
+        max-width: 80%;
+    }
+}
