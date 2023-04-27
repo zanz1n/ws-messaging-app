@@ -11,8 +11,8 @@ export interface MessageProps {
 
 export default function Message({ content, image, userId, username, timeFmt, self }: MessageProps) {
     return <>
-        <div className={styles.message}>
-            <div className={styles.body + self ? ` ${styles.self}` : ""}>
+        <div className={`${styles.message} ${self ? styles.self : styles.other}`}>
+            <div className={styles.body}>
                 { content ? <p>{content}</p> : undefined }
                 { image ? <img src={image} alt={image} /> : undefined }
             </div>
