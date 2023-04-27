@@ -40,7 +40,7 @@ export default function ChatPage() {
             if (data && typeof data == "object" && "data" in data && typeof data["data"] == "object") {
                 const msgs = data["data"] as BaseMessage[];
 
-                setMessages([ ...messages, ...msgs ]);
+                setMessages(msgs);
                 return;
             }
             throw new Error("received incomplete or corrupted data from the server");
@@ -63,7 +63,7 @@ export default function ChatPage() {
                         {messages.map((m) => {
                             const date = new Date(m.createdAt);
                             const timeString = `${date.getHours()}:${date.getMinutes()}:` + 
-                (date.getSeconds() > 10 ? date.getSeconds() : `0${date.getSeconds()}`);
+                                (date.getSeconds() > 10 ? date.getSeconds() : `0${date.getSeconds()}`);
                             return <Message
                                 content={m.content} 
                                 image={m.image}
@@ -75,6 +75,9 @@ export default function ChatPage() {
                             />;
                         })}
                     </div>
+                </div>
+                <div className={styles.form}>
+                    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
                 </div>
             </div>
         </main>
