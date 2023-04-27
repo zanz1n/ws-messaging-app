@@ -14,7 +14,7 @@ export interface ChatMessagePayload {
 }
 
 export default function ChatPage() {
-    const { isAuthenticated, token, userData } = useAuth();
+    const { isAuthenticated, token, userData, logout } = useAuth();
     const { onMessage, close } = useSocket();
 
     const navigate = useNavigate();
@@ -53,6 +53,41 @@ export default function ChatPage() {
         }
         setMessages([ ...messages, message]);
     });
+
+    const [_, setErr] = useState(null as string | null);
+
+    function handleMessageSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+
+        if (!token) {
+            return logout();
+        }
+
+        const text = document.getElementById("content") as HTMLInputElement;
+    
+        if (!text || !text.value || text.value == "") {
+            setErr("the message content must not be empty!");
+            return;
+        }
+
+        fetch(clientConfig.ApiUri + "/messages", {
+            method: "POST",
+            headers: {
+                "Authorization": token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                content: text.value
+            })
+        }).then(res => {
+            if (!res.ok) throw new Error();
+            return res.json();
+        }).then(() => {
+            text.value = "";
+        }).catch(() => {
+            setErr("something went wrong sending your message");
+        });
+    }
     
     return <>
         <Header/>
@@ -76,11 +111,11 @@ export default function ChatPage() {
                         })}
                     </div>
                 </div>
-                <form className={styles.form}>
+                <form className={styles.form} onSubmit={handleMessageSubmit}>
                     <div className={styles.formInput}>
-                        <input type="text" />
+                        <input type="text" id="content" name="content" />
                     </div>
-                    <button>Enviar</button>
+                    <button type="submit">Enviar</button>
                 </form>
             </div>
         </main>
