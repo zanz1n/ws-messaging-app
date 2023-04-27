@@ -38,6 +38,10 @@ func NewRouter(app *fiber.App) {
 
 	messagingService := services.NewMessagesService(db, wsService)
 
+	/* Info Routes */
+	app.Get("/api", GetRoot())
+	/* End Info Routes */
+
 	/* Websocket Middlewares */
 	app.Use("/api/gateway", middlewares.NewWebsocketMiddleware())
 	/* End Websocket Middlewares */
