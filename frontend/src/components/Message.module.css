@@ -19,6 +19,10 @@
     align-self: flex-start;
 }
 
+.message .metadata {
+    color: var(--current-line);
+}
+
 .other .metadata {
     text-align: start;
 }
