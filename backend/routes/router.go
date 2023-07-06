@@ -27,6 +27,8 @@ func NewRouter(app *fiber.App) {
 		}
 	}
 
+	app.Use(middlewares.NewFromInstanceMiddleware())
+
 	db, conn := services.NewDbProvider()
 
 	jwtService := services.NewJwtService()
