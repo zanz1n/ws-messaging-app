@@ -10,5 +10,3 @@ sql:
         emit_empty_slices: true
         package: "dba"
         out: "dba"
-        rename:
-          createdAt: "CreatedAt"
