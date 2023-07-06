@@ -1,9 +1,9 @@
 version: '3.9'
 
 services:
-  redisdb:
+  wma_redisdb:
     restart: always
-    container_name: redisdb
+    container_name: wma_redisdb
     image: redis:alpine
     command: redis-server --save 60 1 --loglevel warning --requirepass "${REDIS_PASSWORD}"
     networks:
@@ -13,9 +13,9 @@ services:
     volumes:
       - ./.docker-volumes/redis_volume:/data
 
-  postgresql:
+  wma_postgresql:
     restart: always
-    container_name: postgresql
+    container_name: wma_postgresql
     image: postgres:alpine
     volumes:
       - ./.docker-volumes/postgres_volume:/var/lib/postgresql/data
@@ -24,35 +24,45 @@ services:
     networks:
       - ws-messaging-app
 
-  api:
+  wma_api:
     restart: always
     environment:
       APP_FORK: "false"
       APP_ENV: "production"
-      REDIS_URI: "redisdb:6379"
+      REDIS_URI: "wma_redisdb:6379"
       APP_SELF_CONTAINED: "true"
     build:
       context: .
-      dockerfile: docker/self-contained/api.dockerfile
+      dockerfile: docker/api.dockerfile
     env_file: .env
     networks:
       - ws-messaging-app
     depends_on:
-      - redisdb
-      - postgresql
+      - wma_redisdb
+      - wma_postgresql
 
-  proxy:
+  wma_proxy:
     restart: always
-    container_name: proxy
+    container_name: wma_proxy
     build:
       context: .
-      dockerfile: docker/self-contained/nginx.dockerfile
+      dockerfile: docker/nginx.dockerfile
     ports:
       - 8080:8080
     networks:
       - ws-messaging-app
     depends_on:
-      - api
+      - wma_api
+
+  wma_migrator:
+    restart: 'no'
+    container_name: wma_migrator
+    env_file: .env
+    build:
+      context: .
+      dockerfile: docker/migrator.dockerfile
+    networks:
+      - ws-messaging-app
 
 networks:
   ws-messaging-app:
