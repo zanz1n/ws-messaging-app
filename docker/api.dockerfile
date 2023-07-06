@@ -1,4 +1,4 @@
-FROM node:lts-alpine3.16 AS node_builder
+FROM node:lts-alpine3.18 AS node_builder
 
 WORKDIR /build
 
@@ -23,7 +23,7 @@ COPY ./frontend/src /build/frontend/src
 
 RUN pnpm build:client
 
-FROM golang:1.20.3-alpine3.16 as builder
+FROM golang:1.20.5-alpine3.18 as builder
 
 WORKDIR /build
 
@@ -37,7 +37,7 @@ WORKDIR /build/backend
 
 RUN make build-min
 
-FROM alpine:3.16
+FROM alpine:3.18
 
 WORKDIR /app
 
