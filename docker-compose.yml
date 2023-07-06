@@ -56,6 +56,8 @@ services:
 
   wma_migrator:
     restart: 'no'
+    profiles:
+      - donotstart
     container_name: wma_migrator
     env_file: .env
     build:
